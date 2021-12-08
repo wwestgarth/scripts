@@ -1,0 +1,29 @@
+#!/usr/local/bin/python3
+
+import argparse
+from misc import vscode, topology
+
+
+
+def main():
+    top = topology.Repos()
+
+    parser = argparse.ArgumentParser(description='Save and restore vscode configs')
+    parser.add_argument('--restore', '-r', dest='restore', action='store_true')
+    parser.add_argument('--save', '-s', dest='save', action='store_true')
+    parser.add_argument('--dry-run', '-d', dest='dryrun', action='store_true')
+    
+    args = parser.parse_args()
+
+    if top.current() is None:
+        print("Not in a repo")
+
+    code = vscode.VSCodeConfig(top,args.dryrun)
+    
+    if args.save:
+        code.save(top.current())
+    if args.restore:
+        code.restore(top.current())
+
+if __name__ == "__main__":
+    main()

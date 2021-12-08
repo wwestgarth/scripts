@@ -42,7 +42,7 @@
             ]
         },
         {
-            "name": "Vega",
+            "name": "Nullchain",
             "type": "go",
             "request": "launch",
             "mode": "debug",
@@ -57,7 +57,7 @@
             ]
         },
         {
-            "name": "Vega Roppy",
+            "name": "Nullchain Ropsten",
             "type": "go",
             "request": "launch",
             "mode": "debug",
@@ -65,9 +65,24 @@
             "args": [
                 "node",
                 "--blockchain.chain-provider=nullchain",
-                "--blockchain.nullchain.genesis-file=/Users/wwestgarth/work/system-tests/docker/zero-genesis.json",
+                "--blockchain.nullchain.genesis-file=/Users/wwestgarth/work/scripts/genesis-files/genesis-ropsten",
                 "--nodewallet-passphrase-file=/Users/wwestgarth/pp",
                 "--nodewallet.eth.address=https://ropsten.infura.io/v3/a3868124cd4340079ae33f48af9f9875",
+                "--blockchain.nullchain.log-level=debug"
+            ]
+        },
+        {
+            "name": "Nullchain Mainnet",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/vega",
+            "args": [
+                "node",
+                "--blockchain.chain-provider=nullchain",
+                "--blockchain.nullchain.genesis-file=/Users/wwestgarth/work/scripts/genesis-files/genesis-ropsten",
+                "--nodewallet-passphrase-file=/Users/wwestgarth/pp",
+                "--nodewallet.eth.address=https://mainnet.infura.io/v3/a3868124cd4340079ae33f48af9f9875",
                 "--blockchain.nullchain.log-level=debug"
             ]
         }
