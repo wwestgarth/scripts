@@ -1,0 +1,4 @@
+#!/bin/sh
+
+python /Users/wwestgarth/scripts/githooks/commit-msg.py $(git symbolic-ref HEAD) $1
+

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+default_portbase=1000
+
+GANACHE_CHAINID=1440
+GANACHE_NETWORKID=1441
+default_ganache_mnemonic="cherry manage trip absorb logic half number test shed logic purpose rifle"
+prefix=local
+
+
+	cname="${prefix}-ganache"
+	echo "Starting $cname: start"
+	docker run -d \
+                --rm \
+		--name "$cname" \
+		-p "$((portbase+545)):8545" \
+		--tmpfs /tmp \
+		trufflesuite/ganache-cli:latest \
+			--blockTime 1 \
+			--chainId "$GANACHE_CHAINID" \
+			--networkId "$GANACHE_NETWORKID" \
+			-h 0.0.0.0 \
+			-p 8545 \
+			-m "$default_ganache_mnemonic"
+
+	echo "Waiting for $cname to be ready..."
+	while true ; do
+		sleep 1
+        echo "http://127.0.0.1:$((portbase+545))/"
+		if curl -s -XPOST -d '{"method":"web3_clientVersion"}' "http://127.0.0.1:$((portbase+545))/" | grep -q EthereumJS ; then
+			echo "Starting $cname: ready"
+			break
+		fi
+	done
+
+sname="${prefix}-smartcontract"
+docker run -d  \
+		--name "${sname}" \
+		-p "$((portbase+80)):80" \
+		-w /app \
+		-e GANACHE_HOSTNAME="${cname}" \
+		--entrypoint /app/run \
+		docker.pkg.github.com/vegaprotocol/devops-infra/smartcontracts:docker
+
+curl -s "http://localhost:$((portbase+80))/data/files/addresses.json"
+

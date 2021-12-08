@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# add --vega-version willcustom where willcustom is the tag of an image with a different vega in it
+
+DV=/Users/wwestgarth/work/devops-infra/scripts/dockerisedvega.sh 
+
+RUN_LOCAL="--vega-version local"
+DATANODE_LOCAL=""
+
+if [ -z "$2" ]
+  then
+    RUN_LOCAL=""
+fi
+
+
+
+
+
+${DV} --vega-loglevel DEBUG --prefix will --portbase 1000 --validators 2 --nonvalidators 1 ${DATANODE_LOCAL} ${RUN_LOCAL} $1

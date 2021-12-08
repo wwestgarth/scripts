@@ -1,0 +1,12 @@
+#!/bin/bash
+PROJECTID=
+ADDRESS=0xBC944ba38753A6fCAdd634Be98379330dbaB3Eb8
+#https://mainnet.infura.io/v3/"${PROJECTID}"
+
+
+
+curl  https://mainnet.infura.io/v3/dfac3d264bdf41cc8b6cc5e81b343979\
+    -X POST \
+    -H "Content-Type: application/json" \
+    -d '{"jsonrpc":"2.0","method":"eth_getCode","params": ["0xcB84d72e61e383767C4DFEb2d8ff7f4FB89abc6e", "latest"],"id":1}'
+

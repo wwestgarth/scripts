@@ -1,0 +1,16 @@
+#/bin/bash
+export DEBUGVEGA=1
+
+# incase you're building on a Mac
+export GOOS=linux
+export GOARCH=amd64
+
+go build -v -gcflags "all=-N -l" -o "cmd/vega/vega-dbg-lin64" "./cmd/vega"
+
+mkdir -p docker/bin
+cp -a cmd/vega/vega-dbg-lin64 docker/bin/vega
+
+# remove any existing image with that tag
+docker rmi docker.pkg.github.com/vegaprotocol/vega/vega:local -f
+
+docker build -t "docker.pkg.github.com/vegaprotocol/vega/vega:local" docker/

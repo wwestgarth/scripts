@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Script that reproduces (4265)
+# After running dockerised vega, run this script passing in a partyID i.e the bit after the w0N
+# w09: dd365639ab8a498c9d047557346c38f508f11f2ffe2f3190a5d7f80e646bf931
+#
+# This will send mint commands to the faucet server to inject money in the accounts via the evtforwarder
+#
+
+
+j=5
+party=$1
+for i in {1..100}
+do
+  echo Adding tokens "$i"
+  curl -X POST localhost:1790/api/v1/mint -H 'Content-Type: application/json' -d '{"amount": "'${j}'", "asset": "fEURO", "party": "'${party}'"}'
+  echo
+  sleep 1
+  curl "http://0.0.0.0:1129/parties/${party}/accounts"
+done

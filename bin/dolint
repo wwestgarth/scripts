@@ -1,0 +1,49 @@
+#!/bin/bash
+
+golangci-lint run -v \
+                                    --max-issues-per-linter 0 \
+                                    --max-same-issues 0 \
+                                    --config .golangci.toml \
+                                    --enable-all \
+                                    --color always \
+                                    --disable promlinter \
+                                    --disable wrapcheck \
+                                    --disable tagliatelle \
+                                    --disable paralleltest \
+                                    --disable nlreturn \
+                                    --disable gomnd \
+                                    --disable goerr113 \
+                                    --disable tparallel \
+                                    --disable testpackage \
+                                    --disable gochecknoglobals \
+                                    --disable forcetypeassert \
+                                    --disable exhaustivestruct \
+                                    --disable exhaustive \
+                                    --disable errorlint \
+                                    --disable cyclop \
+                                    --disable wsl \
+                                    --disable unparam \
+                                    --disable scopelint \
+                                    --disable revive \
+                                    --disable nestif \
+
+                                    --disable lll \
+                                    --disable interfacer \
+                                    --disable gosec \
+                                    --disable gomoddirectives \
+                                    --disable golint \
+                                    --disable goimports \
+                                    --disable godox \
+                                    --disable gocritic \
+                                    --disable goconst \
+                                    --disable gocognit \
+                                    --disable gochecknoinits \
+                                    --disable stylecheck \
+                                    --disable staticcheck \
+                                    --disable gci \
+                                    --disable forbidigo \
+                                    --disable errcheck \
+                                    --disable dupl \
+                                    --disable dogsled \
+                                    --disable funlen \
+                                    --disable gocyclo
