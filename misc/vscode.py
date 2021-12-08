@@ -3,6 +3,11 @@ import shutil
 from . import topology
 
 
+def force_copy(from_path, to_path):
+    if os.path.exists(to_path):
+        shutil.rmtree(to_path)
+    shutil.copytree(from_path, to_path)
+
 class VSCodeConfig:
 
     def __init__(self, top, dry_run=False):
@@ -21,7 +26,7 @@ class VSCodeConfig:
             return
 
         if not self.dry_run:
-            shutil.copytree(to_save, scripts)
+            force_copy(to_save, scripts)
         print(f"Saved {to_save} in {scripts}")
 
     def restore(self, repo):
@@ -33,5 +38,5 @@ class VSCodeConfig:
             return
 
         if not self.dry_run:
-            shutil.copytree(to_restore, in_repo)
+            force_copy(to_restore, in_repo)
         print(f"Saved {to_restore} in {in_repo}")
