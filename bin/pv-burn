@@ -1,0 +1,29 @@
+#!/usr/local/bin/python3
+
+import os
+import argparse
+import shutil
+from misc import topology
+
+
+def main():
+    top = topology.Repos()
+
+    parser = argparse.ArgumentParser(description='Purge any state in the vegahome directory')
+    parser.add_argument('--vegahome', '-v', dest='vegahome', type=str)
+
+    # be good if this could remove state, remove everything, create everything (do all the inits)
+    
+    args = parser.parse_args()
+
+    vegahome = top.default_vegahome()
+    if args.vegahome:
+        vegahome = args.vegahome
+
+    if os.path.exists(vegahome):
+        shutil.rmtree(os.path.join(vegahome, "state"))
+
+    
+
+if __name__ == "__main__":
+    main()

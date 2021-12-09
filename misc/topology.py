@@ -12,6 +12,10 @@ class Repos:
         return None
 
     @staticmethod
+    def default_vegahome():
+        return "/Users/wwestgarth/wort/vegahome"
+
+    @staticmethod
     def scripts():
         return os.path.join(Repos.work(), "scripts")
 

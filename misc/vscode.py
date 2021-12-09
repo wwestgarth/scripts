@@ -39,4 +39,4 @@ class VSCodeConfig:
 
         if not self.dry_run:
             force_copy(to_restore, in_repo)
-        print(f"Saved {to_restore} in {in_repo}")
+        print(f"Restored {to_restore} in {in_repo}")

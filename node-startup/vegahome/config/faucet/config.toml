@@ -1,0 +1,13 @@
+Level = "Info"
+WalletName = "vega.1639051237294446827"
+Port = 1790
+IP = "0.0.0.0"
+
+[RateLimit]
+  CoolDown = "1m0s"
+  AllowList = ["10.0.0.0/8", "127.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "fe80::/10"]
+
+[Node]
+  Port = 3002
+  IP = "vega"
+  Retries = 5

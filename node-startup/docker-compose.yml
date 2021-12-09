@@ -1,0 +1,38 @@
+---
+
+version: '3.3'
+services:
+
+  datanode:
+    image: docker.pkg.github.com/vegaprotocol/data-node/data-node:develop
+    container_name: datanode
+    command: node --home=/vegahome
+    ports:
+      - 3005:3005  # Broker server
+      - 3007:3007  # gRPC Api
+      - 3008:3008  # GraphQL API
+      - 3009:3009  # Rest API
+    volumes:
+      - ./vegahome:/vegahome
+
+  faucet:
+    image: docker.pkg.github.com/vegaprotocol/vega/vega:local
+    container_name: faucet
+    entrypoint: vega
+    command: faucet run --passphrase-file=/vegahome/passphrase-file --home=/vegahome
+    ports:
+      - 1790:1790  # Faucet endpoint
+    volumes:
+      - ./vegahome:/vegahome
+
+  vega:
+    image: docker.pkg.github.com/vegaprotocol/vega/vega:local
+    container_name: vega
+    entrypoint: vega
+    command: node --nodewallet-passphrase-file=/vegahome/passphrase-file --home=/vegahome
+    ports:
+      - 3002:3002  # Grpc API
+      - 3003:3003  # Rest API
+      - 3101:3101  # Timeforward backdoor
+    volumes:
+      - ./vegahome:/vegahome
