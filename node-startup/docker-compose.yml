@@ -36,3 +36,15 @@ services:
       - 3101:3101  # Timeforward backdoor
     volumes:
       - ./vegahome:/vegahome
+  
+  vegawallet:
+    image: vegaprotocol/vegawallet
+    container_name: vegawallet
+    entrypoint: vegawallet
+    command: service run --network local --home=/vegahome --level=debug
+    ports:
+      - 1789:1789
+    volumes:
+      - ./vegahome:/vegahome
+
+
