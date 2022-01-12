@@ -147,7 +147,7 @@ UlimitNOFile = 8192
   Enabled = false
 
 [Governance]
-  Level = "Info"
+  Level = "Debug"
 
 [NodeWallet]
   Level = "Info"

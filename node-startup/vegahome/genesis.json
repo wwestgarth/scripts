@@ -46,6 +46,18 @@
           }
         }
       },
+      "6d9d35f657589e40ddfb448b7ad4a7463b66efb307527fedd2aa7df1bbd5ea61": {
+        "name": "tDAI",
+        "symbol": "tDAI",
+        "total_supply": "0",
+        "decimals": 5,
+        "min_lp_stake": "1",
+        "source": {
+          "builtin_asset": {
+            "max_faucet_amount_mint": "10000000000"
+          }
+        }
+      },
       "XYZ": {
         "name": "XYZ",
         "symbol": "XYZ",
@@ -79,14 +91,14 @@
       "blockchains.ethereumConfig": "{\"chain_id\": \"1440\", \"network_id\": \"1441\", \"bridge_address\": \"0x0858D9BD11A4F6Bae8b979402550CA6c6ddB8332\", \"staking_bridge_addresses\": [], \"confirmations\": 3}",
       "governance.proposal.asset.maxClose": "8760h0m0s",
       "governance.proposal.asset.maxEnact": "8760h0m0s",
-      "governance.proposal.asset.minClose": "48h0m0s",
-      "governance.proposal.asset.minEnact": "48h0m0s",
+      "governance.proposal.asset.minClose": "1s",
+      "governance.proposal.asset.minEnact": "1s",
       "governance.proposal.asset.minProposerBalance": "0",
       "governance.proposal.asset.minVoterBalance": "0",
       "governance.proposal.asset.requiredMajority": "0.66",
       "governance.proposal.asset.requiredParticipation": "0.00001",
       "governance.proposal.freeform.maxClose": "8760h0m0s",
-      "governance.proposal.freeform.minClose": "48h0m0s",
+      "governance.proposal.freeform.minClose": "1s",
       "governance.proposal.freeform.minProposerBalance": "0",
       "governance.proposal.freeform.minVoterBalance": "0",
       "governance.proposal.freeform.requiredMajority": "0.66",
@@ -109,11 +121,11 @@
       "governance.proposal.updateMarket.requiredParticipation": "0.00001",
       "governance.proposal.updateNetParam.maxClose": "8760h0m0s",
       "governance.proposal.updateNetParam.maxEnact": "8760h0m0s",
-      "governance.proposal.updateNetParam.minClose": "48h0m0s",
-      "governance.proposal.updateNetParam.minEnact": "48h0m0s",
+      "governance.proposal.updateNetParam.minClose": "1s",
+      "governance.proposal.updateNetParam.minEnact": "1s",
       "governance.proposal.updateNetParam.minProposerBalance": "0",
       "governance.proposal.updateNetParam.minVoterBalance": "0",
-      "governance.proposal.updateNetParam.requiredMajority": "0.66",
+      "governance.proposal.updateNetParam.requiredMajority": "0.5",
       "governance.proposal.updateNetParam.requiredParticipation": "0.00001",
       "market.auction.maximumDuration": "168h0m0s",
       "market.auction.minimumDuration": "1s",
@@ -146,7 +158,7 @@
       "reward.staking.delegation.optimalStakeMultiplier": "3.0",
       "reward.staking.delegation.payoutDelay": "24h0m0s",
       "reward.staking.delegation.payoutFraction": "1.0",
-      "snapshot.interval.length": "1",
+      "snapshot.interval.length": "100000",
       "spam.protection.delegation.min.tokens": "1000000000000000000",
       "spam.protection.max.delegations": "390",
       "spam.protection.max.proposals": "3",

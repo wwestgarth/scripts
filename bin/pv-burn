@@ -20,8 +20,10 @@ def main():
     if args.vegahome:
         vegahome = args.vegahome
 
-    if os.path.exists(vegahome):
-        shutil.rmtree(os.path.join(vegahome, "state"))
+    to_rm = os.path.join(vegahome,"state")
+    print("Removed", to_rm)
+    if os.path.exists(to_rm):
+        shutil.rmtree(to_rm)
 
     
 

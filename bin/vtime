@@ -1,0 +1,24 @@
+#!/usr/local/bin/python3
+
+import requests
+from datetime import datetime
+
+
+def main():
+
+    base = "http://localhost:3003"
+    response = requests.get(f"{base}/time")
+
+    # The "timestamp" field contains the resulting data we need.
+    vega_time = response.json()["timestamp"]
+    dt = datetime.fromtimestamp(int(vega_time) // 1000000000)
+    print("Vega time:    {}".format(dt.strftime('%Y-%m-%d %H:%M:%S')))
+
+    response = requests.get(f"{base}/statistics")
+    bh = response.json()["statistics"]["blockHeight"]
+    print(f"Block Height: {bh}")
+
+    
+
+if __name__ == "__main__":
+    main()

@@ -1,6 +1,18 @@
 {
 	"app_state": {
 		"assets": {
+			"b4f2726571fbe8e33b442dc92ed2d7f0d810e21835b7371a7915a365f07ccd9b": {
+				"min_lp_stake": "1",
+				"decimals": 18,
+				"name": "Vega",
+				"symbol": "VEGA",
+				"total_supply": "64999723000000000000000000",
+				"source": {
+					"erc20": {
+						"contract_address": "0xBC944ba38753A6fCAdd634Be98379330dbaB3Eb8"
+					}
+				}
+			},
 			"XYZ": {
 				"name": "XYZ",
 				"symbol": "XYZ",

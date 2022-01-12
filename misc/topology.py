@@ -13,7 +13,7 @@ class Repos:
 
     @staticmethod
     def default_vegahome():
-        return "/Users/wwestgarth/wort/vegahome"
+        return "/Users/wwestgarth/work/scripts/node-startup/vegahome"
 
     @staticmethod
     def scripts():

@@ -65,7 +65,7 @@
             "args": [
                 "node",
                 "--blockchain.chain-provider=nullchain",
-                "--blockchain.nullchain.genesis-file=/Users/wwestgarth/work/scripts/genesis-files/genesis-ropsten",
+                "--blockchain.nullchain.genesis-file=/Users/wwestgarth/work/scripts/genesis-files/genesis-ropsten.json",
                 "--nodewallet-passphrase-file=/Users/wwestgarth/pp",
                 "--nodewallet.eth.address=https://ropsten.infura.io/v3/a3868124cd4340079ae33f48af9f9875",
                 "--blockchain.nullchain.log-level=debug"
@@ -80,7 +80,7 @@
             "args": [
                 "node",
                 "--blockchain.chain-provider=nullchain",
-                "--blockchain.nullchain.genesis-file=/Users/wwestgarth/work/scripts/genesis-files/genesis-ropsten",
+                "--blockchain.nullchain.genesis-file=/Users/wwestgarth/work/scripts/genesis-files/genesis-mainnet.json",
                 "--nodewallet-passphrase-file=/Users/wwestgarth/pp",
                 "--nodewallet.eth.address=https://mainnet.infura.io/v3/a3868124cd4340079ae33f48af9f9875",
                 "--blockchain.nullchain.log-level=debug"
