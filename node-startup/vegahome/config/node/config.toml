@@ -1,3 +1,4 @@
+NodeMode = "validator"
 # Set the max number of open files (see: ulimit -n)
 UlimitNOFile = 8192
 
@@ -33,7 +34,7 @@ UlimitNOFile = 8192
   [Blockchain.Null]
     Level = "Debug"
     BlockDuration = "1s"
-    TransactionsPerBlock = 10
+    TransactionsPerBlock = 3
     GenesisFile = "/vegahome/genesis.json"
     IP = "0.0.0.0"
     Port = 3101
@@ -46,6 +47,7 @@ UlimitNOFile = 8192
   Accounts = true
   Assets = true
   NetworkParameters = true
+  NetworkLimits = true
   Parties = true
   Validators = true
   Proposals = true
@@ -106,27 +108,8 @@ UlimitNOFile = 8192
       NameKey = "N"
       TimeKey = "T"
 
-[Matching]
-  Level = "Info"
-  LogPriceLevelsDebug = false
-  LogRemovedOrdersDebug = false
-
 [Oracles]
-  Level = "Debug"
-
-[Liquidity]
   Level = "Info"
-
-[Position]
-  Level = "Info"
-  LogPositionUpdate = true
-
-[Risk]
-  Level = "Info"
-  LogMarginUpdate = true
-
-[Settlement]
-  Level = "Debug"
 
 [Time]
   Level = "Info"
@@ -147,7 +130,7 @@ UlimitNOFile = 8192
   Enabled = false
 
 [Governance]
-  Level = "Debug"
+  Level = "Info"
 
 [NodeWallet]
   Level = "Info"
@@ -165,7 +148,7 @@ UlimitNOFile = 8192
 [EvtForward]
   Level = "Info"
   RetryRate = "10s"
-  BlockchainQueueAllowlist = ["881536d203fa6a44948986fff96178084b0c3280a4addcc6f78d2c732c3120fb"]
+  BlockchainQueueAllowlist = ["6c83f84d6bfcf29eb2a6d8d6a37f6aab614aeaeaf29e07366c812ef636ff1072"]
 
 [Genesis]
   Level = "Info"
@@ -215,12 +198,15 @@ UlimitNOFile = 8192
   Level = "Info"
 
 [Snapshot]
-  Level = "Info"
+  Level = "Error"
   Versions = 10
   RetryLimit = 5
   Storage = "GOLevelDB"
   DBPath = ""
   StartHeight = 0
+
+[StateVar]
+  Level = "Info"
 
 [Pprof]
   Level = "Info"

@@ -1,6 +1,6 @@
 {
-  "genesis_time": "2021-12-09T12:00:37.864331298Z",
-  "chain_id": "test-chain-Hpa8e4",
+  "genesis_time": "2022-01-12T09:00:40.597568265Z",
+  "chain_id": "test-chain-gguCB4",
   "initial_height": "0",
   "consensus_params": {
     "block": {
@@ -49,10 +49,10 @@
     },
     "validators": {
       "6NemqXSfN4zfZvAQeIANflEFqQ98izX9C0KLI2dITSY=": {
-        "id": "9bdcecd16a37303e9cabfefa4d193e63edeba4d4ef99f252ab97fdc6c802555f",
-        "vega_pub_key": "fce874de1ba8ac8bca0e13b7e469c692b019a7b18cd1d6d8f5dd0f8ecaa4430b",
+        "id": "c2b0ab69fb1bd19862c04df401920ea62d3e0bce41a50148240f42017824d17a",
+        "vega_pub_key": "dfcf0fa8d67cfa11b3a511e320f3c47807a5e0735cc06dd9c2bc00f7ccc67117",
         "vega_pub_key_index": 1,
-        "ethereum_address": "0xB6eA7744971F455BBD754A97e8E05ea13Dc1A033",
+        "ethereum_address": "0x9e5BEEC6E56B28cCbd02864840B0f1e0125e42Ce",
         "tm_pub_key": "6NemqXSfN4zfZvAQeIANflEFqQ98izX9C0KLI2dITSY=",
         "info_url": "",
         "country": "",
@@ -124,6 +124,7 @@
       "network.checkpoint.marketFreezeDate": "never",
       "network.checkpoint.networkEndOfLifeDate": "never",
       "network.checkpoint.timeElapsedBetweenCheckpoints": "1m",
+      "network.floatingPointUpdates.delay": "5m",
       "reward.asset": "VOTE",
       "reward.staking.delegation.competitionLevel": "1.1",
       "reward.staking.delegation.delegatorShare": "0.883",
@@ -134,7 +135,7 @@
       "reward.staking.delegation.optimalStakeMultiplier": "3.0",
       "reward.staking.delegation.payoutDelay": "24h0m0s",
       "reward.staking.delegation.payoutFraction": "1.0",
-      "snapshot.interval.length": "1",
+      "snapshot.interval.length": "1000",
       "spam.protection.delegation.min.tokens": "1000000000000000000",
       "spam.protection.max.delegations": "390",
       "spam.protection.max.proposals": "3",
@@ -145,6 +146,7 @@
       "validators.epoch.length": "24h0m0s",
       "validators.vote.required": "0.67"
     },
+    "network_parameters_checkpoint_overwrite": null,
     "network_limits": {
       "propose_market_enabled": true,
       "propose_asset_enabled": true,
