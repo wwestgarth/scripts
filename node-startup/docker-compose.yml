@@ -16,7 +16,7 @@ services:
       - ./vegahome:/vegahome
 
   faucet:
-    image: docker.pkg.github.com/vegaprotocol/vega/vega:local
+    image: docker.pkg.github.com/vegaprotocol/vega/vega
     container_name: faucet
     entrypoint: vega
     command: faucet run --passphrase-file=/vegahome/passphrase-file --home=/vegahome
@@ -26,7 +26,7 @@ services:
       - ./vegahome:/vegahome
 
   vega:
-    image: docker.pkg.github.com/vegaprotocol/vega/vega:local
+    image: docker.pkg.github.com/vegaprotocol/vega/vega
     container_name: vega
     entrypoint: vega
     command: node --nodewallet-passphrase-file=/vegahome/passphrase-file --home=/vegahome

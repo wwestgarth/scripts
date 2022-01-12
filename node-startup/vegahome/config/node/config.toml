@@ -34,7 +34,7 @@ UlimitNOFile = 8192
   [Blockchain.Null]
     Level = "Debug"
     BlockDuration = "1s"
-    TransactionsPerBlock = 3
+    TransactionsPerBlock = 1
     GenesisFile = "/vegahome/genesis.json"
     IP = "0.0.0.0"
     Port = 3101
