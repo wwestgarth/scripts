@@ -18,6 +18,16 @@ def mint(pubkey):
     r = requests.post(url, json=payload)
     print(r.status_code)
 
+    payload = {
+	"party": pubkey,
+	"amount": "10000000000",
+	"asset": "VOTE",
+    }
+
+
+    r = requests.post(url, json=payload)
+    print(r.status_code)
+
 
 def main():
 
