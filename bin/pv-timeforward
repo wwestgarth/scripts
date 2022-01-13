@@ -1,0 +1,33 @@
+#!/usr/local/bin/python3
+
+import argparse
+import requests
+
+
+def mint(duration):
+
+    url = 'http://localhost:3101/api/v1/forwardtime'
+    payload = {
+	"forward": duration
+    }
+
+
+    r = requests.post(url, json=payload)
+    print(r.status_code)
+
+def main():
+
+    parser = argparse.ArgumentParser(description='Purge any state in the vegahome directory')
+    parser.add_argument('--duration', '-d', dest='duration', type=str)
+
+    # be good if this could remove state, remove everything, create everything (do all the inits)
+    
+    args = parser.parse_args()
+
+    if args.duration:
+        mint(args.duration)
+
+    
+
+if __name__ == "__main__":
+    main()
