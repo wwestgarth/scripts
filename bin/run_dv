@@ -16,4 +16,5 @@ fi
 
 
 
-${DV} --vega-loglevel DEBUG --prefix will --portbase 1000 --validators 2 --nonvalidators 1 ${DATANODE_LOCAL} ${RUN_LOCAL} $1
+#${DV} --vega-loglevel DEBUG --prefix will --portbase 1000 --validators 2 --nonvalidators 1 ${DATANODE_LOCAL} ${RUN_LOCAL} $1
+${DV} --vega-loglevel DEBUG --prefix will --portbase 1000 --validators 2 --nonvalidators 0 ${DATANODE_LOCAL} ${RUN_LOCAL} $1

@@ -59,6 +59,9 @@ ALL_VESTING = {
 
 ALL_BRIDGE_LOGIC = {
     "0xF009C66c6afC9661143fD7cE1eDb02c1961a6510", #testnet
+    "0xE43013C3c2A134AB3782ADEb258669A8566DAD57", #devnet 
+    "0xb365125A7fE54f6001CF21C2Bc3b3Bc2a5Cf77E7", #stagnet
+    "0xffC1eb64e22fd5E29816c633eE84088EEEe879E5", #stagnet2
 }
 
 def getcode(url, address):
