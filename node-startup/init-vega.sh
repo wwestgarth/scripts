@@ -4,7 +4,7 @@ set -ex
 
 HERE="$(dirname "$(realpath "$0")")"
 
-docker run -t -d --rm -v "${HERE}"/vegahome:/vegahome --entrypoint=/bin/bash --name core docker.pkg.github.com/vegaprotocol/vega/vega:local
+docker run -t -d --rm -v "${HERE}"/vegahome:/vegahome --entrypoint=/bin/bash --name core ghcr.io/vegaprotocol/vega/vega:local
 
 # Init core and faucet
 #docker exec core vega init -f validator --home=/vegahome --nodewallet-passphrase-file=/vegahome/passphrase-file --output=json
@@ -31,7 +31,7 @@ docker exec core vega genesis update --tm-home=/vegahome --home=/vegahome --pass
 docker kill core
 
 # Init datanode
-docker run --rm -v "${HERE}"/vegahome:/vegahome docker.pkg.github.com/vegaprotocol/data-node/data-node:develop init -f --home=/vegahome 
+docker run --rm -v "${HERE}"/vegahome:/vegahome ghcr.io/vegaprotocol/data-node/data-node:develop init -f --home=/vegahome 
 
 # Init vegawallet
 docker run --rm -v "${HERE}"/vegahome:/vegahome vegaprotocol/vegawallet init -f --home=/vegahome --output=json

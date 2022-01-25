@@ -1,6 +1,6 @@
 {
-  "genesis_time": "2022-01-12T09:00:40.597568265Z",
-  "chain_id": "test-chain-gguCB4",
+  "genesis_time": "2022-01-25T08:51:36.908777448Z",
+  "chain_id": "test-chain-XI5bnc",
   "initial_height": "0",
   "consensus_params": {
     "block": {
@@ -64,7 +64,7 @@
       "replay_attack_threshold": 150
     },
     "network_parameters": {
-      "blockchains.ethereumConfig": "{\"network_id\": \"XXX\", \"chain_id\": \"XXX\", \"bridge_address\": \"0xXXX\", \"confirmations\": 3, \"staking_bridge_addresses\": []}",
+      "blockchains.ethereumConfig": "{\"network_id\": \"XXX\", \"chain_id\": \"XXX\", \"collateral_bridge_contract\": { \"address\": \"0xXXX\" }, \"confirmations\": 3, \"staking_bridge_contract\": { \"address\": \"0xXXX\", \"deployment_block_height\": 0}, \"token_vesting_contract\": { \"address\": \"0xXXX\", \"deployment_block_height\": 0 }}",
       "governance.proposal.asset.maxClose": "8760h0m0s",
       "governance.proposal.asset.maxEnact": "8760h0m0s",
       "governance.proposal.asset.minClose": "48h0m0s",

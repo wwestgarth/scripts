@@ -285,7 +285,7 @@ UlimitNOFile = 8192
   Level = "Info"
 
 [Broker]
-  Level = "Debug"
+  Level = "Info"
   [Broker.SocketConfig]
     IP = "0.0.0.0"
     Port = 3005
