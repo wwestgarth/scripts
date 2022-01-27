@@ -88,7 +88,6 @@
       "replay_attack_threshold": 150
     },
     "network_parameters": {
-      "blockchains.ethereumConfig": "{\"chain_id\": \"1440\", \"network_id\": \"1441\", \"bridge_address\": \"0x0858D9BD11A4F6Bae8b979402550CA6c6ddB8332\", \"staking_bridge_addresses\": [], \"confirmations\": 3}",
       "governance.proposal.asset.maxClose": "8760h0m0s",
       "governance.proposal.asset.maxEnact": "8760h0m0s",
       "governance.proposal.asset.minClose": "1s",

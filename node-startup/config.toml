@@ -2,7 +2,7 @@
 UlimitNOFile = 8192
 
 [API]
-  Level = "Info"
+  Level = "Debug"
   Timeout = "5s"
   Port = 3002
   IP = "0.0.0.0"
@@ -15,14 +15,14 @@ UlimitNOFile = 8192
     APMEnabled = true
 
 [Blockchain]
-  Level = "Info"
+  Level = "Debug"
   LogTimeDebug = true
   LogOrderSubmitDebug = true
   LogOrderAmendDebug = false
   LogOrderCancelDebug = false
   ChainProvider = "nullchain"
   [Blockchain.Tendermint]
-    Level = "Info"
+    Level = "Debug"
     LogTimeDebug = true
     ClientAddr = "tcp://0.0.0.0:26657"
     ClientEndpoint = "/websocket"
@@ -39,10 +39,10 @@ UlimitNOFile = 8192
     Port = 3101
 
 [Collateral]
-  Level = "Info"
+  Level = "Debug"
 
 [CoreAPI]
-  LogLevel = "Info"
+  LogLevel = "Debug"
   Accounts = true
   Assets = true
   NetworkParameters = true
@@ -56,26 +56,26 @@ UlimitNOFile = 8192
   Delegations = true
 
 [Execution]
-  Level = "Info"
+  Level = "Debug"
   [Execution.Matching]
-    Level = "Info"
+    Level = "Debug"
     LogPriceLevelsDebug = false
     LogRemovedOrdersDebug = false
   [Execution.Risk]
-    Level = "Info"
+    Level = "Debug"
     LogMarginUpdate = true
   [Execution.Position]
-    Level = "Info"
+    Level = "Debug"
     LogPositionUpdate = true
   [Execution.Settlement]
-    Level = "Info"
+    Level = "Debug"
   [Execution.Fee]
-    Level = "Info"
+    Level = "Debug"
   [Execution.Liquidity]
-    Level = "Info"
+    Level = "Debug"
 
 [Processor]
-  Level = "Info"
+  Level = "Debug"
   LogOrderSubmitDebug = true
   LogOrderAmendDebug = false
   LogOrderCancelDebug = false
@@ -112,87 +112,87 @@ UlimitNOFile = 8192
   LogRemovedOrdersDebug = false
 
 [Oracles]
-  Level = "Info"
+  Level = "Debug"
 
 [Liquidity]
-  Level = "Info"
+  Level = "Debug"
 
 [Position]
-  Level = "Info"
+  Level = "Debug"
   LogPositionUpdate = true
 
 [Risk]
-  Level = "Info"
+  Level = "Debug"
   LogMarginUpdate = true
 
 [Settlement]
-  Level = "Info"
+  Level = "Debug"
 
 [Time]
-  Level = "Info"
+  Level = "Debug"
 
 [Epoch]
-  Level = "Info"
+  Level = "Debug"
 
 [Monitoring]
-  Level = "Info"
+  Level = "Debug"
   Interval = "500ms"
   Retries = 5
 
 [Metrics]
-  Level = "Info"
+  Level = "Debug"
   Timeout = "5s"
   Port = 2112
   Path = "/metrics"
   Enabled = false
 
 [Governance]
-  Level = "Info"
+  Level = "Debug"
 
 [NodeWallet]
-  Level = "Info"
+  Level = "Debug"
   [NodeWallet.ETH]
-    Level = "Info"
+    Level = "Debug"
     Address = "http://127.0.0.1:545"
     ClefAddress = ""
 
 [Assets]
-  Level = "Info"
+  Level = "Debug"
 
 [Notary]
-  Level = "Info"
+  Level = "Debug"
 
 [EvtForward]
-  Level = "Info"
+  Level = "Debug"
   RetryRate = "10s"
   BlockchainQueueAllowlist = []
 
 [Genesis]
-  Level = "Info"
+  Level = "Debug"
 
 [Validators]
-  Level = "Info"
+  Level = "Debug"
 
 [Banking]
-  Level = "Info"
+  Level = "Debug"
 
 [Stats]
-  Level = "Info"
+  Level = "Debug"
 
 [NetworkParameters]
-  Level = "Info"
+  Level = "Debug"
 
 [Limits]
-  Level = "Info"
+  Level = "Debug"
 
 [Checkpoint]
-  Level = "Info"
+  Level = "Debug"
 
 [Staking]
-  Level = "Info"
+  Level = "Debug"
 
 [Broker]
-  Level = "Info"
+  Level = "Debug"
   [Broker.Socket]
     DialTimeout = "2m0s"
     DialRetryInterval = "5s"
@@ -206,13 +206,13 @@ UlimitNOFile = 8192
     Transport = "tcp"
 
 [Rewards]
-  Level = "Info"
+  Level = "Debug"
 
 [Delegation]
-  Level = "Info"
+  Level = "Debug"
 
 [Spam]
-  Level = "Info"
+  Level = "Debug"
 
 [Snapshot]
   Level = "Error"
@@ -223,7 +223,7 @@ UlimitNOFile = 8192
   StartHeight = 0
 
 [Pprof]
-  Level = "Info"
+  Level = "Debug"
   Enabled = false
   Port = 6060
   ProfilesDir = "/tmp"

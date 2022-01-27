@@ -54,7 +54,7 @@
         "vega_pub_key_index": 1,
         "ethereum_address": "0x9e5BEEC6E56B28cCbd02864840B0f1e0125e42Ce",
         "tm_pub_key": "6NemqXSfN4zfZvAQeIANflEFqQ98izX9C0KLI2dITSY=",
-        "info_url": "",
+        "Debug_url": "",
         "country": "",
         "name": "",
         "avatar_url": ""
@@ -64,7 +64,6 @@
       "replay_attack_threshold": 150
     },
     "network_parameters": {
-      "blockchains.ethereumConfig": "{\"network_id\": \"XXX\", \"chain_id\": \"XXX\", \"collateral_bridge_contract\": { \"address\": \"0xXXX\" }, \"confirmations\": 3, \"staking_bridge_contract\": { \"address\": \"0xXXX\", \"deployment_block_height\": 0}, \"token_vesting_contract\": { \"address\": \"0xXXX\", \"deployment_block_height\": 0 }}",
       "governance.proposal.asset.maxClose": "8760h0m0s",
       "governance.proposal.asset.maxEnact": "8760h0m0s",
       "governance.proposal.asset.minClose": "48h0m0s",
@@ -74,7 +73,7 @@
       "governance.proposal.asset.requiredMajority": "0.66",
       "governance.proposal.asset.requiredParticipation": "0.00001",
       "governance.proposal.freeform.maxClose": "8760h0m0s",
-      "governance.proposal.freeform.minClose": "48h0m0s",
+      "governance.proposal.freeform.minClose": "2s",
       "governance.proposal.freeform.minProposerBalance": "0",
       "governance.proposal.freeform.minVoterBalance": "0",
       "governance.proposal.freeform.requiredMajority": "0.66",
