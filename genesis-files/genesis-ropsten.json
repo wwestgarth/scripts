@@ -77,7 +77,7 @@
 			"market.stake.target.scalingFactor": "5",
 			"market.stake.target.timeWindow": "10s",
 			"market.value.windowLength": "60s",
-			"blockchains.ethereumConfig": "{\"network_id\": \"3\", \"chain_id\": \"3\", \"bridge_address\": \"0x0614188938f5C3bD8461D4B413A39eeC2C5f42D9\", \"confirmations\": 50, \"staking_bridge_addresses\": [\"0xfce2CC92203A266a9C8e67461ae5067c78f67235\"]}"
+			"blockchains.ethereumConfig": "{\"network_id\": \"1\", \"chain_id\": \"1\", \"collateral_bridge_contract\": { \"address\": \"0xCd403f722b76366f7d609842C589906ca051310f\" }, \"staking_bridge_contract\": { \"address\": \"0x195064D33f09e0c42cF98E665D9506e0dC17de68\", \"deployment_block_height\": 0 }, \"token_vesting_contract\": { \"address\": \"0x23d1bFE8fA50a167816fBD79D7932577c06011f4\", \"deployment_block_height\": 0 }, \"confirmations\": 3}"
 		},
     "network_limits": {
       "propose_market_enabled": true,

@@ -5,7 +5,7 @@
 DV=/Users/wwestgarth/work/devops-infra/scripts/dockerisedvega.sh 
 
 RUN_LOCAL="--vega-version local"
-DATANODE_LOCAL="--datanode-version local"
+#DATANODE_LOCAL="--datanode-version local"
 
 if [ -z "$2" ]
   then
@@ -17,4 +17,5 @@ fi
 
 
 #${DV} --vega-loglevel DEBUG --prefix will --portbase 1000 --validators 2 --nonvalidators 1 ${DATANODE_LOCAL} ${RUN_LOCAL} $1
-${DV} --vega-loglevel DEBUG --prefix will --portbase 1000 --validators 2 --nonvalidators 1 ${DATANODE_LOCAL} ${RUN_LOCAL} $1
+#${DV} --vega-loglevel DEBUG --prefix will --portbase 1000 --validators 4 --nonvalidators 0 --snapshot-type-abci ${DATANODE_LOCAL} ${RUN_LOCAL} $1
+${DV} --vega-loglevel DEBUG --prefix will --portbase 1000 --validators 4 --nonvalidators 1 ${DATANODE_LOCAL} ${RUN_LOCAL} $1

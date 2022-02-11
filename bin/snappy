@@ -1,0 +1,69 @@
+#!/bin/bash
+
+docker kill will-tendermint-node2
+docker kill will-vega-node2
+docker system prune -f
+
+#rm -r ~/dockerised-will/tendermint/node2/data/blockstore.db
+#rm -r ~/dockerised-will/tendermint/node2/data/cs.wal
+#rm -r ~/dockerised-will/tendermint/node2/data/evidence.db
+#rm -r ~/dockerised-will/tendermint/node2/data/state.db
+#rm -r ~/dockerised-will/tendermint/node2/data/tx_index.db
+
+
+uidgid="$(id -u):$(id -g)"
+
+basedatadir="$HOME"
+datadir="$basedatadir/dockerised-will"
+
+
+echo "starting new TM..."
+docker run -d \
+			--name will-tendermint-node2\
+			--user "$uidgid" \
+			--network will-veganet \
+			-p "1021:26657" \
+			-v "$datadir/tendermint/node2:/tendermint" \
+			--entrypoint vega \
+			ghcr.io/vegaprotocol/vega/vega:local \
+				tm node --home /tendermint
+sleep 0.25
+
+echo "TM started".
+echo "Starting new VEGA from snapshot"
+
+home_in_docker=/home/vega
+nodewallet_passphrase_file="$home_in_docker/nodewallet-passphrase.txt"
+	
+docker_common_args=(
+  --name "will-vega-node2"
+  --user "$uidgid"
+  --network "will-veganet"
+  -e HOME="$home_in_docker"
+  -w "$home_in_docker"
+  -p "1022:3002"
+  -p "1023:3003"
+  -p "1024:3004"
+  -v "$datadir/vega/node2:$home_in_docker"
+)
+vega_args=(
+  node
+  --nodewallet-passphrase-file "$nodewallet_passphrase_file"
+  #--snapshot.block-height=-1
+  #--snapshot.storage=BOO
+  --snapshot.log-level=Debug
+)
+
+docker_args=(
+  # common args
+  "${docker_common_args[@]}"
+  # specify entrypoint
+  --entrypoint vega
+  # specify docker image
+  ghcr.io/vegaprotocol/vega/vega:local
+    # Vega app args
+    "${vega_args[@]}"
+)
+
+docker run -d "${docker_args[@]}"
+sleep 0.25

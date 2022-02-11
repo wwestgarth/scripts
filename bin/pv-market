@@ -1,0 +1,54 @@
+#!/usr/local/bin/python3
+
+import argparse
+import requests
+
+
+def timeforward(duration):
+
+    url = 'http://localhost:3101/api/v1/forwardtime'
+    payload = {
+	"forward": duration
+    }
+
+
+    r = requests.post(url, json=payload)
+    print(r.status_code)
+
+
+def mint(pubkey):
+
+    url = 'http://localhost:1790/api/v1/mint'
+    payload = {
+	"party": pubkey,
+	"amount": "10000000000",
+	"asset": "6d9d35f657589e40ddfb448b7ad4a7463b66efb307527fedd2aa7df1bbd5ea61",
+    }
+
+
+    r = requests.post(url, json=payload)
+    print(r.status_code)
+
+    payload = {
+	"party": pubkey,
+	"amount": "10000000000",
+	"asset": "VOTE",
+    }
+
+
+    r = requests.post(url, json=payload)
+    print(r.status_code)
+
+def main():
+
+    
+    
+    args = parser.parse_args()
+
+    if args.duration:
+        mint(args.duration)
+
+    
+
+if __name__ == "__main__":
+    main()

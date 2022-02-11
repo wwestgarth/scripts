@@ -1,0 +1,192 @@
+#!/usr/local/bin/python3
+
+import requests
+import json
+import hashlib
+import pyperclip
+
+import difflib
+
+RESTORED = "http://localhost:1003"
+ORIGINAL = "http://localhost:1013"
+
+def compare_limits(o,r):
+    if o != r:
+        print(f"mismatch networklimits")
+
+def compare_netparams(o, r):
+
+    on = o.get("networkParameters")
+    rn = r.get("networkParameters")
+
+    od = dict()
+    for param in on:
+        od[param["key"]] = param["value"]
+
+    rd = dict()
+    for param in rn:
+        rd[param["key"]] = param["value"]
+
+    for k in od.keys():
+        if od[k] != rd[k]:
+            print(f"mismatch netparam {k}: {od[k]} v {rd[k]}")
+
+def compare_validators(o, r):
+    on = o.get("validators")
+    rn = r.get("validators")
+
+    od = dict()
+    for param in on:
+        od[param["nodeId"]] = param
+
+    rd = dict()
+    for param in rn:
+        rd[param["nodeId"]] = param
+
+    for k in od.keys():
+        if od[k] != rd[k]:
+            print(f"mismatch validator {k}: {od[k]} v {rd[k]}")
+    return
+
+def compare_parties(o, r):
+
+    on = o.get("parties")
+    rn = r.get("parties")
+
+    od = set()
+    for param in on:
+        od.add(param["id"])
+
+    rd = set()
+    for param in rn:
+        rd.add(param["id"])
+
+    if od != rd:
+            print(f"mismatch parties {od}, {rd}")
+    return
+
+def compare_assets(o, r):
+    on = o.get("assets")
+    rn = r.get("assets")
+
+    od = dict()
+    for param in on:
+        od[param["id"]] = param
+
+    rd = dict()
+    for param in rn:
+        rd[param["id"]] = param
+
+    for k in od.keys():
+        if od[k] != rd[k]:
+            print(f"mismatch asset {k}: {od[k]} v {rd[k]}")
+    return
+
+def compare_accounts(o, r):
+    on = o.get("accounts")
+    rn = r.get("accounts")
+
+    od = dict()
+    for param in on:
+        od[param["party"]+param["asset"]+param["type"]] = param
+
+    rd = dict()
+    for param in rn:
+        rd[param["party"]+param["asset"]+param["type"]] = param
+
+    for k in od.keys():
+        if od[k] != rd[k]:
+            print(f"mismatch account {k}: {od[k]} v {rd[k]}")
+    return
+
+def compare_staking(o, r):
+    on = o.get("partiesStake")
+    rn = r.get("partiesStake")
+
+    od = dict()
+    for param in on:
+        od[param["party"]] = param
+
+    rd = dict()
+    for param in rn:
+        rd[param["party"]] = param
+
+    for k in od.keys():
+        if od[k] != rd[k]:
+            print(f"mismatch parties-stake {k}: {od[k]} v {rd[k]}")
+    return
+
+def compare_proposals(o, r):
+    on = o.get("proposals")
+    rn = r.get("proposals")
+
+    od = dict()
+    for param in on:
+        od[param["id"]] = param
+
+    rd = dict()
+    for param in rn:
+        rd[param["id"]] = param
+
+    for k in od.keys():
+        if od[k] != rd[k]:
+            print(f"mismatch proposals {k}: {od[k]} v {rd[k]}")
+        # now check votes
+        oo = requests.get(ORIGINAL+"/votes?proposal="+k)
+        oo.raise_for_status()
+
+        rr = requests.get(RESTORED+"/votes?proposal="+k)
+        rr.raise_for_status()
+        compare_votes(oo.json(), rr.json())
+
+
+
+    return
+
+def compare_votes(o, r):
+    on = o.get("votes")
+    rn = r.get("votes")
+
+    od = dict()
+    for param in on:
+        od[param["partyId"]] = param
+
+    rd = dict()
+    for param in rn:
+        rd[param["partyId"]] = param
+
+    for k in od.keys():
+        if od[k] != rd[k]:
+            print(f"mismatch votes {k}: {od[k]} v {rd[k]}")
+    return
+
+def main():
+
+    endpoints = [
+        ("/network/limits", compare_limits),
+        ("/network/parameters", compare_netparams),
+        ("/validators", compare_validators),
+        ("/parties", compare_parties),
+        ("/assets", compare_assets),
+        ("/accounts", compare_accounts),
+        ("/parties/stake", compare_staking),
+        ("/proposals", compare_proposals),
+    ]
+
+    for endpoint in endpoints:
+        
+        url, fn = endpoint[0], endpoint[1]
+        o = requests.get(ORIGINAL+url)
+        o.raise_for_status()
+
+        r = requests.get(RESTORED+url)
+        r.raise_for_status()
+
+        fn(o.json(), r.json())
+
+
+
+
+
+if __name__ == "__main__":
+    main()

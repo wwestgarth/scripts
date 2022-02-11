@@ -1,18 +1,6 @@
 {
 	"app_state": {
 		"assets": {
-			"d1984e3d365faa05bcafbe41f50f90e3663ee7c0da22bb1e24b164e9532691b2": {
-				"min_lp_stake": "1000000000000000000",
-				"decimals": 18,
-				"name": "VEGA",
-				"symbol": "VEGA",
-				"total_supply": "64999723000000000000000000",
-				"source": {
-				  "erc20": {
-					"contract_address": "0xcB84d72e61e383767C4DFEb2d8ff7f4FB89abc6e"
-				  }
-				}
-			  },
 			"VOTE": {
 				"name": "VOTE",
 				"symbol": "VOTE",
@@ -77,7 +65,7 @@
 			"market.stake.target.scalingFactor": "5",
 			"market.stake.target.timeWindow": "10s",
 			"market.value.windowLength": "60s",
-			"blockchains.ethereumConfig": "{\"network_id\": \"1\", \"chain_id\": \"1\", \"bridge_address\": \"0xCd403f722b76366f7d609842C589906ca051310f\", \"confirmations\": 50, \"staking_bridge_addresses\": [\"0x23d1bFE8fA50a167816fBD79D7932577c06011f4\", \"0x195064D33f09e0c42cF98E665D9506e0dC17de68\"]}"
+			"blockchains.ethereumConfig": "{\"network_id\": \"1\", \"chain_id\": \"1\", \"collateral_bridge_contract\": { \"address\": \"0xCd403f722b76366f7d609842C589906ca051310f\" }, \"staking_bridge_contract\": { \"address\": \"0x195064D33f09e0c42cF98E665D9506e0dC17de68\", \"deployment_block_height\": 0 }, \"token_vesting_contract\": { \"address\": \"\", \"deployment_block_height\": 0 }, \"confirmations\": 3}"
 		},
     "network_limits": {
       "propose_market_enabled": true,
