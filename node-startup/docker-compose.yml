@@ -4,7 +4,7 @@ version: '3.3'
 services:
 
   datanode:
-    image: ghcr.io/vegaprotocol/vegaprotocol/data-node/data-node:local
+    image: ghcr.io/vegaprotocol/data-node/data-node
     container_name: datanode
     command: node --home=/vegahome
     ports:
@@ -16,7 +16,7 @@ services:
       - ./vegahome:/vegahome
 
   faucet:
-    image: ghcr.io/vegaprotocol/vega/vega:local
+    image: ghcr.io/vegaprotocol/vega/vega
     container_name: faucet
     entrypoint: vega
     command: faucet run --passphrase-file=/vegahome/passphrase-file --home=/vegahome
@@ -26,7 +26,7 @@ services:
       - ./vegahome:/vegahome
 
   vega:
-    image: ghcr.io/vegaprotocol/vega/vega:local
+    image: ghcr.io/vegaprotocol/vega/vega
     container_name: vega
     entrypoint: vega
     command: node --nodewallet-passphrase-file=/vegahome/passphrase-file --home=/vegahome
