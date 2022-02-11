@@ -51,8 +51,6 @@ func runScenario(conn *nullchain.Connection, w *nullchain.Wallet) error {
 		return err
 	}
 
-	return nil
-
 	fmt.Println("")
 	fmt.Println("Submitting Orders....")
 
@@ -69,6 +67,8 @@ func runScenario(conn *nullchain.Connection, w *nullchain.Wallet) error {
 		}
 
 	}
+
+	return nil
 
 	err = nullchain.SettleMarket(w, conn, parties[0])
 	if err != nil {
