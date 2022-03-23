@@ -9,5 +9,5 @@ IP = "0.0.0.0"
 
 [Node]
   Port = 3002
-  IP = "vega"
+  IP = "localhost"
   Retries = 5

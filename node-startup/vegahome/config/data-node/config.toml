@@ -8,7 +8,7 @@ UlimitNOFile = 8192
   Port = 3007
   IP = "0.0.0.0"
   StreamRetries = 3
-  CoreNodeIP = "vega"
+  CoreNodeIP = "localhost"
   CoreNodeGRPCPort = 3002
 
 [Accounts]

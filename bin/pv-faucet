@@ -28,6 +28,25 @@ def mint(pubkey):
     r = requests.post(url, json=payload)
     print(r.status_code)
 
+    payload = {
+    "party": pubkey,
+    "amount": "10000000000",
+    #"asset": "tBTC",
+    "asset": "5cfa87844724df6069b94e4c8a6f03af21907d7bc251593d08e4251043ee9f7c",
+    }
+
+    r = requests.post(url, json=payload)
+    print(r.status_code)
+
+    payload = {
+    "party": pubkey,
+    "amount": "10000000000",
+    #"asset": "tBTC",
+    "asset": "993ed98f4f770d91a796faab1738551193ba45c62341d20597df70fea6704ede",
+    }
+
+    r = requests.post(url, json=payload)
+    print(r.status_code)
 
 def main():
 
@@ -35,13 +54,13 @@ def main():
     parser.add_argument('--pubkey', dest='pubkey', type=str)
 
     # be good if this could remove state, remove everything, create everything (do all the inits)
-    
+
     args = parser.parse_args()
 
     if args.pubkey:
         mint(args.pubkey)
 
-    
+
 
 if __name__ == "__main__":
     main()

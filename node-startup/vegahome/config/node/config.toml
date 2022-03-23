@@ -35,7 +35,7 @@ UlimitNOFile = 8192
     Level = "Debug"
     BlockDuration = "1s"
     TransactionsPerBlock = 1
-    GenesisFile = "/vegahome/genesis.json"
+    GenesisFile = "VEGAHOME/genesis.json"
     IP = "0.0.0.0"
     Port = 3101
 
@@ -183,7 +183,7 @@ UlimitNOFile = 8192
     EventChannelBufferSize = 10000000
     SocketChannelBufferSize = 1000000
     MaxSendTimeouts = 10
-    Address = "datanode"
+    Address = "localhost"
     Port = 3005
     Enabled = true
     Transport = "tcp"
