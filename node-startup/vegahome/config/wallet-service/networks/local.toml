@@ -6,12 +6,12 @@ Host = "0.0.0.0"
 
 [API]
   [API.GRPC]
-    Hosts = ["datanode:3007"]
+    Hosts = ["localhost:3007"]
     Retries = 5
   [API.REST]
-    Hosts = ["datanode:3009"]
+    Hosts = ["localhost:3009"]
   [API.GraphQL]
-    Hosts = ["datanode:3008"]
+    Hosts = ["localhost:3008"]
 
 [Console]
   URL = ""
