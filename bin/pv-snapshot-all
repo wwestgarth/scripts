@@ -59,7 +59,7 @@ def get_statistics(base_url):
 
 
 
-def is_running(vp, tp):
+def is_running(vp, tp, restore_from):
 
     # if things work, then statistics will change the chain status from disconnected -> replay
     # if things fail the tendermint processes should crash?
@@ -77,9 +77,14 @@ def is_running(vp, tp):
     if stats is None:
         return CHAIN_DIED
 
+    if restore_from is not None and int(stats["blockHeight"]) > restore_from + 100:
+        print("reached cap", int(stats["blockHeight"]), restore_from)
+        return CHAIN_FINISHED
+
     if stats["status"] == "CHAIN_STATUS_DISCONNECTED":
         print("chain running, currently at height", stats["blockHeight"])
         return CHAIN_RUNNING
+
 
     if stats["status"] == "CHAIN_STATUS_REPLAYING":
         return CHAIN_FINISHED
@@ -98,16 +103,17 @@ def restore_from_snapshot(vghome, tmhome, restore_from):
     time.sleep(1)
     try:
         # small pause so that the core node's endpoint is ready with statistics
-        status = is_running(vp, tp)
+        status = is_running(vp, tp, restore_from)
         while status == CHAIN_RUNNING:
-            time.sleep(5)
-            status = is_running(vp, tp)
+            time.sleep(0.1)
+            status = is_running(vp, tp, restore_from)
 
         return status == CHAIN_FINISHED
 
     finally:
         tp.stop()
         vp.stop()
+        time.sleep(0.1)
 
 def main():
 
@@ -138,15 +144,18 @@ def main():
     # we restore from snapshots at the highest blocks first because if a snapshot restore goes wrong, we may invalidate later ones
     worked = 0
     visual = []
+    failing_blocks = []
     for h in heights[::-1]:
         if restore_from_snapshot(vghome, tmhome, h):
             worked += 1
             visual.append(".")
         else:
             visual.append("F")
+            failing_blocks.append(h)
 
-    print(f"precentage of working snapshots: {worked/len(heights) * 100}%")
-    print(visual)
+    print(f"percentage of working snapshots: {worked/len(heights) * 100}% ({worked}/{len(heights)})")
+    print(failing_blocks)
+    print("".join(visual))
 
 if __name__ == "__main__":
     main()
