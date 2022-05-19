@@ -6,7 +6,7 @@ import os
 import subprocess
 import requests
 import time
-
+import json
 
 CHAIN_RUNNING = "chain_running"
 CHAIN_DIED = "chain_died"
@@ -61,6 +61,9 @@ def get_statistics(base_url):
 
 def is_running(vp, tp):
 
+    # if things work, then statistics will change the chain status from disconnected -> replay
+    # if things fail the tendermint processes should crash?
+
     if not tp.is_alive():
         print("tendermint died")
         return CHAIN_DIED
@@ -84,36 +87,66 @@ def is_running(vp, tp):
 
     return CHAIN_STALLED
 
-def main():
 
 
-    parser = argparse.ArgumentParser(description='Purge any state in the vegahome directory')
-    parser.add_argument('--block', '-b', dest='block', required=True, type=int)
-    args = parser.parse_args()
+def restore_from_snapshot(vghome, tmhome, restore_from):
 
-    vp = start_vega_process("/Users/wwestgarth/Downloads/archive/testnet/vega/node2", None)
-    tp = start_tm_process("/Users/wwestgarth/Downloads/archive/testnet/tendermint/node2")
+    print("Restoring from block-height", restore_from)
+    vp = start_vega_process(vghome, restore_from)
+    tp = start_tm_process(tmhome)
 
-    print("Letting chain run...")
+    time.sleep(1)
     try:
-
-        # if things work, then statistics will change the chain status from disconnected -> replay
-        # if things fail the tendermint processes should crash?
         # small pause so that the core node's endpoint is ready with statistics
-        time.sleep(1)
         status = is_running(vp, tp)
         while status == CHAIN_RUNNING:
-            time.sleep(1)
+            time.sleep(5)
             status = is_running(vp, tp)
 
-        if status == CHAIN_FINISHED:
-            print("restore successful")
-            return
+        return status == CHAIN_FINISHED
 
-        print("restore failed!")
     finally:
         tp.stop()
         vp.stop()
+
+def main():
+
+
+    parser = argparse.ArgumentParser(description='Restore node from all existing snapshots on loop')
+    parser.add_argument('--replay', '-r', dest='replay', action='store_true')
+    args = parser.parse_args()
+    vghome = "/Users/wwestgarth/Downloads/archive/testnet/vega/node2"
+    tmhome = "/Users/wwestgarth/Downloads/archive/testnet/tendermint/node2"
+
+    if args.replay:
+        print("replaying chain for snapshot generation")
+        restore_from_snapshot(vghome, tmhome, None)
+        return
+
+    print("Looking for snapshots in local store...")
+    res = subprocess.check_output(['vegatools', 'snapshotdb', '--db-path', os.path.join(vghome, "state", "node", "snapshots")])
+    snapshots = json.loads(res)["snapshots"]
+
+    print(f"found {len(snapshots)} snapshots")
+
+    # collect snapshot heights
+    heights = []
+    for snapshot in snapshots:
+        heights.append(snapshot["height"])
+    heights.sort()
+
+    # we restore from snapshots at the highest blocks first because if a snapshot restore goes wrong, we may invalidate later ones
+    worked = 0
+    visual = []
+    for h in heights[::-1]:
+        if restore_from_snapshot(vghome, tmhome, h):
+            worked += 1
+            visual.append(".")
+        else:
+            visual.append("F")
+
+    print(f"precentage of working snapshots: {worked/len(heights) * 100}%")
+    print(visual)
 
 if __name__ == "__main__":
     main()
