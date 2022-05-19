@@ -1,0 +1,103 @@
+#!/usr/local/bin/python3
+
+import argparse
+from logging import logMultiprocessing
+import sys
+import os
+
+
+def trim_logs(lines):
+    """
+    removes all the timestamps from the log file so we can diff
+    """
+    out_lines = []
+    for line in lines:
+        new_line = line
+        s = line.split()
+        if len(s) == 0:
+            continue
+        if len(s[0]) == 28 and s[0].endswith("+0100"):
+            new_line = line[28:]
+        
+
+        out_lines.append(new_line)
+
+    return out_lines
+
+
+def trim_to_block(block_number, infile):
+
+    block_lines = []
+    save = False
+
+    with open(infile) as inf:
+
+        for line in inf.readlines():
+            # look for start of block "block_number", Spam protection EndOfBlock called	{"blockHeight": 29}
+
+            if "entering begin block" in line and save:
+                break
+
+            if "entering begin block" in line and ": " + block_number + "}" in line:
+                save = True
+
+            if save:
+                block_lines.append(line)
+
+    if save:
+        return block_lines
+
+    # must be restored logs and first block after restore?
+    save = True
+    with open(infile) as inf:
+
+        for line in inf.readlines():
+            # look for start of block "block_number", Spam protection EndOfBlock called	{"blockHeight": 29}
+
+            if "entering begin block" in line and save:
+                break
+
+            if save:
+                block_lines.append(line)
+
+    return block_lines
+
+
+
+
+def main():
+
+
+    parser = argparse.ArgumentParser(description='Purge any state in the vegahome directory')
+    parser.add_argument('--block', '-b', dest='block', required=True, type=int)
+    parser.add_argument('--in', '-i', dest='infile', required=True, type=str)
+    args = parser.parse_args()
+
+    block = str(args.block)
+    file_to_trim = args.infile
+
+    if not os.path.exists(file_to_trim):
+        print("file doesn't exist", file_to_trim)
+        sys.exit(1)
+
+    if not file_to_trim.endswith(".log"):
+        print("file doesn't end with .log?")
+        sys.exit(1)
+
+    out_filename = file_to_trim[:-4] + "-trim-"+ str(args.block) + ".log"
+    print("writing to", out_filename, "block block", block)
+
+   
+
+    new_lines = trim_to_block(block, file_to_trim)
+    new_lines = trim_logs(new_lines)
+
+    with open(out_filename, "w") as outfile:
+        for line in new_lines:
+            outfile.write(line)
+
+
+    
+
+if __name__ == "__main__":
+    main()
