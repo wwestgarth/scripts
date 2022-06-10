@@ -18,8 +18,12 @@ def msg(out):
 
 class Process:
 
-    def __init__(self, name, cmd):
-        self._p = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, universal_newlines=True)
+    def __init__(self, name, cmd, out_file=None):
+
+        out_to = subprocess.DEVNULL
+        if out_file is not None:
+            out_to = open(out_file, "w")
+        self._p = subprocess.Popen(cmd, stdout=out_to, universal_newlines=True)
         self.name = name
 
     def is_alive(self):
@@ -30,13 +34,16 @@ class Process:
         self._p.terminate()
 
 def start_vega_process(home, restore_from):
+
+    out_file = "node.log"
     cmd = ['vega', 'node']
     if home is not None:
         cmd.append("--home="+home)
     if restore_from is not None:
+        out_file = "restore_" + out_file
         cmd.append("--snapshot.load-from-block-height="+str(restore_from))
     print("starting Vega", cmd)
-    return Process("vega", cmd)
+    return Process("vega", cmd, out_file=out_file)
 
 
 def start_tm_process(home):
@@ -77,7 +84,7 @@ def is_running(vp, tp, restore_from):
     if stats is None:
         return CHAIN_DIED
 
-    if restore_from is not None and int(stats["blockHeight"]) > restore_from + 100:
+    if restore_from is not None and int(stats["blockHeight"]) > restore_from + 50:
         print("reached cap", int(stats["blockHeight"]), restore_from)
         return CHAIN_FINISHED
 
@@ -120,6 +127,7 @@ def main():
 
     parser = argparse.ArgumentParser(description='Restore node from all existing snapshots on loop')
     parser.add_argument('--replay', '-r', dest='replay', action='store_true')
+    parser.add_argument('--block', '-b', dest='block', type=str)
     args = parser.parse_args()
     vghome = "/Users/wwestgarth/Downloads/archive/testnet/vega/node2"
     tmhome = "/Users/wwestgarth/Downloads/archive/testnet/tendermint/node2"
@@ -127,6 +135,11 @@ def main():
     if args.replay:
         print("replaying chain for snapshot generation")
         restore_from_snapshot(vghome, tmhome, None)
+        return
+
+    if args.block:
+        print("restoring from block", args.block)
+        restore_from_snapshot(vghome, tmhome, int(args.block))
         return
 
     print("Looking for snapshots in local store...")
