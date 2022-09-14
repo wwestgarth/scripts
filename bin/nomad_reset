@@ -1,0 +1,46 @@
+#!/bin/bash
+
+set -ex
+
+cd /Users/wwestgarth/work/vega
+#go build -o /Users/wwestgarth/work/tests/vega ./cmd/vega
+go install ./...
+#GOOS=linux GOARCH=amd64 go build -o /Users/wwestgarth/work/tests/vega-linux ./cmd/vega
+
+
+cd /Users/wwestgarth/work/vega
+#go build -o /Users/wwestgarth/work/tests/data-node ./cmd/data-node
+#go build -o /Users/wwestgarth/work/tests/data-node ./cmd/vegwallet
+go install ./cmd/data-node
+go install ./cmd/vegawallet
+
+cd /Users/wwestgarth/work/tests
+
+vegacapsule network destroy --home-path ./testnet
+vegacapsule network bootstrap --home-path ./testnet --config-path /Users/wwestgarth/work/system-tests/vegacapsule/capsule_config.hcl #./capsule_config.hcl
+#vegacapsule network bootstrap --home-path ./testnet --config-path /Users/wwestgarth/work/system-tests/vegacapsule/capsule_validators_config.hcl
+
+cd /Users/wwestgarth/work/tests
+vegacapsule nodes ls-validators --home-path ./testnet > ./testnet/validators.json
+
+# Dump smartcontracts addresses file
+mkdir -p testnet/smartcontracts
+vegacapsule state get-smartcontracts-addresses --home-path testnet > testnet/smartcontracts/addresses.json
+
+
+vegacapsule ethereum multisig init --home-path testnet
+#cd /Users/wwestgarth/work/system-tests/vegacapsule/multisig-setup/
+
+#sleep 1
+#node main.js "/Users/wwestgarth/work/tests/testnet/smartcontracts/addresses.json" "/Users/wwestgarth/work/tests/testnet/validators.json"
+
+#cd /Users/wwestgarth/work/tests
+
+
+#vega tm unsafe-reset-all --home=/Users/wwestgarth/work/tests/testnet/tendermint/node0
+#vega tm unsafe-reset-all --home=/Users/wwestgarth/work/tests/testnet/tendermint/node1
+#vega tm unsafe-reset-all --home=/Users/wwestgarth/work/tests/testnet/tendermint/node2
+
+#vega unsafe_reset_all --home=/Users/wwestgarth/work/tests/testnet/vega/node0
+##vega unsafe_reset_all --home=/Users/wwestgarth/work/tests/testnet/vega/node1
+#vega unsafe_reset_all --home=/Users/wwestgarth/work/tests/testnet/vega/node2#
