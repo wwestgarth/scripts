@@ -42,7 +42,7 @@
 			"ReplayAttackThreshold": 30
 		},
 		"network_parameters": {
-			"snapshot.interval.length": "1",
+			"snapshot.interval.length": "5",
 			"validators.epoch.length": "5s",
 			"governance.proposal.asset.maxClose": "8760h0m0s",
 			"governance.proposal.asset.maxEnact": "8760h0m0s",
@@ -86,10 +86,23 @@
 			"market.liquidityProvision.shapes.maxSize": "10",
 			"market.liquidity.stakeToCcySiskas": "0.2",
 			"market.margin.scalingFactors": "{\"search_level\": 1.1, \"initial_margin\": 1.2, \"collateral_release\": 1.4}",
-			"market.monitor.price.updateFrequency": "4s",
 			"market.stake.target.scalingFactor": "5",
 			"market.stake.target.timeWindow": "10s",
 			"market.value.windowLength": "60s"
+		},
+		"validators": {
+			"DRXBMW8LE1uVn9pn1ItHKMLuK/2+GVvLGIOM0qDkcLY=": {
+			  "avatar_url": "",
+			  "country": "",
+			  "ethereum_address": "0x7629Faf5B7a3BB167B6f2F86DB5fB7f13B20Ee90",
+			  "from_epoch": 0,
+			  "id": "0c9ded96f04e07745e954aae4e06225fa7b9960dbe4a57afc820d0a3d3fdbfe0",
+			  "info_url": "https://en.wikipedia.org/wiki/Mutya_Buena",
+			  "name": "Mutya",
+			  "tm_pub_key": "DRXBMW8LE1uVn9pn1ItHKMLuK/2+GVvLGIOM0qDkcLY=",
+			  "vega_pub_key": "71e1aab094cb87545237040a2253e5d8294ec5465f314ebedc2b847014b9949d",
+			  "vega_pub_key_index": 1
+			}
 		},
     "network_limits": {
       "propose_market_enabled": true,
