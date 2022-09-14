@@ -1,9 +1,9 @@
 #!/usr/local/bin/python3
 
 import argparse
-from logging import logMultiprocessing
 import sys
 import os
+import itertools
 
 
 def trim_logs(lines):
@@ -70,31 +70,31 @@ def main():
 
     parser = argparse.ArgumentParser(description='Purge any state in the vegahome directory')
     parser.add_argument('--block', '-b', dest='block', required=True, type=int)
-    parser.add_argument('--in', '-i', dest='infile', required=True, type=str)
+    parser.add_argument('--in', '-i', dest='infile', required=True, action="append", type=str, nargs="+")
     args = parser.parse_args()
 
     block = str(args.block)
-    file_to_trim = args.infile
 
-    if not os.path.exists(file_to_trim):
-        print("file doesn't exist", file_to_trim)
-        sys.exit(1)
+    for file_to_trim in args.infile[0]:
+        if not os.path.exists(file_to_trim):
+            print("file doesn't exist", file_to_trim)
+            sys.exit(1)
 
-    if not file_to_trim.endswith(".log"):
-        print("file doesn't end with .log?")
-        sys.exit(1)
+        if not file_to_trim.endswith(".log"):
+            print("file doesn't end with .log?")
+            sys.exit(1)
 
-    out_filename = file_to_trim[:-4] + "-trim-"+ str(args.block) + ".log"
-    print("writing to", out_filename, "block block", block)
+        out_filename = file_to_trim[:-4] + "-trim-"+ str(args.block) + ".log"
+        print("writing to", out_filename, "block block", block)
 
-   
+    
 
-    new_lines = trim_to_block(block, file_to_trim)
-    new_lines = trim_logs(new_lines)
+        new_lines = trim_to_block(block, file_to_trim)
+        new_lines = trim_logs(new_lines)
 
-    with open(out_filename, "w") as outfile:
-        for line in new_lines:
-            outfile.write(line)
+        with open(out_filename, "w") as outfile:
+            for line in new_lines:
+                outfile.write(line)
 
 
     
