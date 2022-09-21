@@ -44,8 +44,8 @@ class Vega:
         cmd.append("--snapshot.load-from-block-height="+str(restore_from))
 
         print("starting Vega", cmd)
-        self.out_to = open("node.log", "w")
-        self.err_to = open("err-node.log", "w")
+        self.out_to = open(f"node-{str(restore_from)}.log", "w")
+        self.err_to = open(f"err-node-{str(restore_from)}.log", "w")
         self._p = subprocess.Popen(cmd, stdout=self.out_to, stderr=self.err_to, universal_newlines=True)
         #self._p = subprocess.Popen(cmd, universal_newlines=True)
     
@@ -53,15 +53,11 @@ class Vega:
     def stop(self):
         print("stopping vega")
         self._p.terminate()
+        self._p.wait()
         if self.out_to is not None:
             self.out_to.close()
         if self.err_to is not None:
             self.err_to.close()
-        
-        # annoying but we need a tiny pause here to make sure all everything in tendermint is shutdown
-        # before we spin up another node. It could be a tm bug but it still holds on to a leveldb 
-        # lock even when we shutdown cleanly
-        time.sleep(0.5)
 
 
     def is_alive(self):
@@ -120,7 +116,7 @@ def is_running(vp):
 
 
     if not vp.is_alive():
-        print("vega died")
+        print("vega DIED")
         return False, 0
 
     stats =  vp.statistics()        
@@ -152,7 +148,7 @@ def restore_from_snapshot(vghome, tmhome, restore_from):
         current_block_height = 0
         last_height_change =time.time()
         while True:
-            time.sleep(1)
+            time.sleep(0.1)
             last_block_height = current_block_height
             alive, current_block_height = is_running(vp)
             if not alive:
@@ -169,7 +165,7 @@ def restore_from_snapshot(vghome, tmhome, restore_from):
                 continue
             
             last_block_height = current_block_height
-            if now > last_height_change + 3:
+            if now > last_height_change + 1:
                 # no height change in 3 seconds, chain finished
                 return True
 
