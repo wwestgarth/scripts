@@ -7,6 +7,7 @@ import subprocess
 import requests
 import time
 import json
+import sys
 
 CHAIN_RUNNING = "chain_running"
 CHAIN_DIED = "chain_died"
@@ -22,6 +23,8 @@ class Vega:
         self.out_to = None
         self.err_to = None
 
+        print(vghome)
+        print(tmhome)
         cfg = self.read_vega_config()
 
         # pump up keep recent so that we keep all the snapshots
@@ -30,6 +33,7 @@ class Vega:
         # turn off broker so we don't need a data-node
         cfg["Broker"]["Socket"]["Enabled"] = False
         cfg["Broker"]["File"]["Enabled"] = False
+        cfg['Admin'] = dict()
 
         # read REST API port
         rest_port = cfg["API"]["REST"]["Port"]
@@ -37,10 +41,13 @@ class Vega:
 
         self.write_vega_config(cfg)
 
+       
+
 
     def start(self, restore_from):
 
         cmd = ['vega', 'node', "--home="+self.vghome, "--tendermint-home="+self.tmhome]
+        #cmd = ['vega', 'start']
         cmd.append("--snapshot.load-from-block-height="+str(restore_from))
 
         print("starting Vega", cmd)
@@ -48,6 +55,7 @@ class Vega:
         self.err_to = open(f"err-node-{str(restore_from)}.log", "w")
         self._p = subprocess.Popen(cmd, stdout=self.out_to, stderr=self.err_to, universal_newlines=True)
         #self._p = subprocess.Popen(cmd, universal_newlines=True)
+
     
 
     def stop(self):
@@ -66,7 +74,7 @@ class Vega:
 
     def wait_until_ready(self):
         start = time.time()
-        while time.time() < start + 2:
+        while time.time() < start + 5:
             if self.statistics() is not None:
                 return True
             time.sleep(0.1)
@@ -74,7 +82,6 @@ class Vega:
 
 
     def statistics(self):
-
         url = f"{self.rest_url}/statistics"
         try:
             response = requests.get(url)
@@ -139,6 +146,7 @@ def restore_from_snapshot(vghome, tmhome, restore_from):
     # wait until its started by trying to ping statistics
     if not vp.wait_until_ready():
         print("node never started")
+        vp.stop()
         return False
    
 
@@ -152,11 +160,24 @@ def restore_from_snapshot(vghome, tmhome, restore_from):
             last_block_height = current_block_height
             alive, current_block_height = is_running(vp)
             if not alive:
-                return False # chain died
+                # TODO try to find which block it died on
 
-            if restore_from != 0 and current_block_height > restore_from + 50:
+                # scrape the file
+
+                # was is a snapshot block?
+
+                # was it a checkpoint block?
+
+                return False # chain died
+            if restore_from != 0 and current_block_height > restore_from + 150:
+            #if current_block_height > 13143:
                 # we've restore from a snapshot and made is 50 blocks into the future
                 # we call that a success
+                print("REACHED CAP")
+                return True
+            
+            if current_block_height == 993:
+                print("reached end")
                 return True
 
             now = time.time()
@@ -165,8 +186,9 @@ def restore_from_snapshot(vghome, tmhome, restore_from):
                 continue
             
             last_block_height = current_block_height
-            if now > last_height_change + 1:
+            if now > last_height_change + 2:
                 # no height change in 3 seconds, chain finished
+                print("stop?")
                 return True
 
                 
@@ -178,25 +200,43 @@ def main():
 
 
     parser = argparse.ArgumentParser(description='Restore node from all existing snapshots')
+    parser.add_argument('--view', '-v', dest='view', action='store_true', help="Simply replay the chain with no snapshot reloading")
     parser.add_argument('--replay', '-r', dest='replay', action='store_true', help="Simply replay the chain with no snapshot reloading")
     parser.add_argument('--block', '-b', dest='block', type=str, help="reload from a specific snapshot at a particular height")
-    parser.add_argument('--vega-home', dest='vghome', type=str, required=True, help="the home path of the vega node we will use to replay")
-    parser.add_argument('--tm-home', dest='tmhome', type=str, required=True, help="the home path of the tm node we will use to replay")
+    parser.add_argument('--vega-home', dest='vghome', type=str, required=False, help="the home path of the vega node we will use to replay")
+    parser.add_argument('--tm-home', dest='tmhome', type=str, required=False, help="the home path of the tm node we will use to replay")
 
     args = parser.parse_args()
-    #vghome = "/Users/wwestgarth/Downloads/testnet/vega/node2"
-    #tmhome = "/Users/wwestgarth/Downloads/testnet/tendermint/node2"
-    vghome = args.vghome
-    tmhome = args.tmhome
+    vghome = "/Users/wwestgarth/Downloads/testnet/vega/node5"
+    tmhome = "/Users/wwestgarth/Downloads/testnet/tendermint/node5"
+    #vghome = args.vghome
+    #tmhome = args.tmhome
+    #vghome= "/Users/wwestgarth/Downloads/archive/vega_config"
+    #tmhome= "/Users/wwestgarth/Downloads/archive/tm_config"
+    #vghome= "/Users/wwestgarth/work/networkdata/testnet/vega/node2"
+    #tmhome= "/Users/wwestgarth/work/networkdata/testnet/tendermint/node2"
+
+    st = time.time()
+    print("start", st)
+
+    if args.view:
+        print("Looking for snapshots in local store...")
+        res = subprocess.check_output(['vega', 'tools', 'snapshot', '--home', vghome])
+        for l in res.splitlines():
+            print(l)
+        return
 
     if args.replay:
         print("replaying chain for snapshot generation")
-        restore_from_snapshot(vghome, tmhome, 0)
+        if not restore_from_snapshot(vghome, tmhome, 0):
+            sys.exit(1)
         return
 
     if args.block:
         print("restoring from block", args.block)
         restore_from_snapshot(vghome, tmhome, int(args.block))
+        nd = time.time()
+        print("nd:", nd, "diff:", nd - st)
         return
 
     # replay the whole chain
@@ -205,7 +245,7 @@ def main():
     #    return
 
     print("Looking for snapshots in local store...")
-    res = subprocess.check_output(['vegatools', 'snapshotdb', '--db-path', os.path.join(vghome, "state", "node", "snapshots")])
+    res = subprocess.check_output(['vega', 'tools', 'snapshot', '--output', 'json', '--db-path', os.path.join(vghome, "state", "node", "snapshots")])
     snapshots = json.loads(res)["snapshots"]
     print(f"found {len(snapshots)} snapshots")
 
@@ -228,12 +268,56 @@ def main():
             else:
                 visual.append("F")
                 failing_blocks.append(h)
-    except KeyboardInterrupt:
+    except:
         pass
 
     print(f"percentage of working snapshots: {worked/len(visual) * 100}% ({worked}/{len(visual)})")
     print(failing_blocks)
     print("".join(visual))
+    nd = time.time()
+    print("nd:", nd, "diff:", nd - st)
+
+
+    if len(failing_blocks) == 0:
+        return
+    return
+    # try to work out what happened
+
+    for b in failing_blocks:
+        diagnose(b)
+
+    sys.exit(1)
+
+
+def diagnose(block, vghome, tmhome):
+
+    # TODO can we avoid multple chain replays by going backwards?
+
+    print("diagnosing bad snapshot", block)
+
+    # first we're going to replay the chain
+    restore_from_snapshot(vghome, tmhome, 0)
+
+
+    # TODO if we save the bad snapshot/checkpoint json on the first pass, we just need to replay and
+
+    # now we're going to restore from the bad block
+    # TODO it should die, if it doesn't some indeterminism occurred
+    restore_from_snapshot(vghome, tmhome, block)
+
+    # try work out what block it died on
+    died_on = block
+
+    # work out if it was a snapshot block or a checkpoint block
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     main()
