@@ -20,11 +20,11 @@
 				"decimals": 5,
 				"min_lp_stake": "1",
 				"source": {
-				  "builtin_asset": {
-					"max_faucet_amount_mint": "10000000000"
-				  }
+					"builtin_asset": {
+						"max_faucet_amount_mint": "10000000000"
+					}
 				}
-			  },
+			},
 			"VOTE": {
 				"name": "VOTE",
 				"symbol": "VOTE",
@@ -48,7 +48,7 @@
 			"governance.proposal.asset.maxEnact": "8760h0m0s",
 			"governance.proposal.asset.minClose": "5s",
 			"governance.proposal.asset.minEnact": "5s",
-			"governance.proposal.asset.minProposerBalance": "0",
+			"governance.proposal.asset.minProposerBalance": "1",
 			"governance.proposal.asset.minVoterBalance": "1",
 			"governance.proposal.asset.requiredMajority": "0.66",
 			"governance.proposal.asset.requiredParticipation": "0.00000000000000000000000015",
@@ -56,7 +56,7 @@
 			"governance.proposal.market.maxEnact": "8760h0m0s",
 			"governance.proposal.market.minClose": "5s",
 			"governance.proposal.market.minEnact": "5s",
-			"governance.proposal.market.minProposerBalance": "0",
+			"governance.proposal.market.minProposerBalance": "1",
 			"governance.proposal.market.minVoterBalance": "1",
 			"governance.proposal.market.requiredMajority": "0.66",
 			"governance.proposal.market.requiredParticipation": "0.00000000000000000000000015",
@@ -64,7 +64,7 @@
 			"governance.proposal.updateMarket.maxEnact": "8760h0m0s",
 			"governance.proposal.updateMarket.minClose": "5s",
 			"governance.proposal.updateMarket.minEnact": "5s",
-			"governance.proposal.updateMarket.minProposerBalance": "0",
+			"governance.proposal.updateMarket.minProposerBalance": "1",
 			"governance.proposal.updateMarket.minVoterBalance": "1",
 			"governance.proposal.updateMarket.requiredMajority": "0.66",
 			"governance.proposal.updateMarket.requiredParticipation": "0.00001",
@@ -72,7 +72,7 @@
 			"governance.proposal.updateNetParam.maxEnact": "8760h0m0s",
 			"governance.proposal.updateNetParam.minClose": "5s",
 			"governance.proposal.updateNetParam.minEnact": "5s",
-			"governance.proposal.updateNetParam.minProposerBalance": "0",
+			"governance.proposal.updateNetParam.minProposerBalance": "1",
 			"governance.proposal.updateNetParam.minVoterBalance": "1",
 			"governance.proposal.updateNetParam.requiredMajority": "0.66",
 			"governance.proposal.updateNetParam.requiredParticipation": "0.00001",
@@ -84,7 +84,6 @@
 			"market.liquidity.maximumLiquidityFeeFactorLevel": "0.3",
 			"market.liquidity.targetstake.triggering.ratio": "0",
 			"market.liquidityProvision.shapes.maxSize": "10",
-			"market.liquidity.stakeToCcySiskas": "0.2",
 			"market.margin.scalingFactors": "{\"search_level\": 1.1, \"initial_margin\": 1.2, \"collateral_release\": 1.4}",
 			"market.stake.target.scalingFactor": "5",
 			"market.stake.target.timeWindow": "10s",
@@ -92,24 +91,24 @@
 		},
 		"validators": {
 			"DRXBMW8LE1uVn9pn1ItHKMLuK/2+GVvLGIOM0qDkcLY=": {
-			  "avatar_url": "",
-			  "country": "",
-			  "ethereum_address": "0x7629Faf5B7a3BB167B6f2F86DB5fB7f13B20Ee90",
-			  "from_epoch": 0,
-			  "id": "0c9ded96f04e07745e954aae4e06225fa7b9960dbe4a57afc820d0a3d3fdbfe0",
-			  "info_url": "https://en.wikipedia.org/wiki/Mutya_Buena",
-			  "name": "Mutya",
-			  "tm_pub_key": "DRXBMW8LE1uVn9pn1ItHKMLuK/2+GVvLGIOM0qDkcLY=",
-			  "vega_pub_key": "71e1aab094cb87545237040a2253e5d8294ec5465f314ebedc2b847014b9949d",
-			  "vega_pub_key_index": 1
+				"avatar_url": "",
+				"country": "",
+				"ethereum_address": "0x7629Faf5B7a3BB167B6f2F86DB5fB7f13B20Ee90",
+				"from_epoch": 0,
+				"id": "0c9ded96f04e07745e954aae4e06225fa7b9960dbe4a57afc820d0a3d3fdbfe0",
+				"info_url": "https://en.wikipedia.org/wiki/Mutya_Buena",
+				"name": "Mutya",
+				"tm_pub_key": "DRXBMW8LE1uVn9pn1ItHKMLuK/2+GVvLGIOM0qDkcLY=",
+				"vega_pub_key": "71e1aab094cb87545237040a2253e5d8294ec5465f314ebedc2b847014b9949d",
+				"vega_pub_key_index": 1
 			}
 		},
-    "network_limits": {
-      "propose_market_enabled": true,
-      "propose_asset_enabled": true,
-      "propose_market_enabled_from": "2021-08-31T23:59:59Z",
-      "propose_asset_enabled_from": "2021-08-31T23:59:59Z"
-	}
+		"network_limits": {
+			"propose_market_enabled": true,
+			"propose_asset_enabled": true,
+			"propose_market_enabled_from": "2021-08-31T23:59:59Z",
+			"propose_asset_enabled_from": "2021-08-31T23:59:59Z"
+		}
 	},
 	"consensus_params": {
 		"block": {

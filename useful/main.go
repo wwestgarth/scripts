@@ -6,11 +6,10 @@ import (
 	"os"
 	"time"
 
-	"code.vegaprotocol.io/vega/examples/nullchain"
-	config "code.vegaprotocol.io/vega/examples/nullchain/config"
-
-	"code.vegaprotocol.io/protos/vega"
-	walletpb "code.vegaprotocol.io/protos/vega/wallet/v1"
+	"code.vegaprotocol.io/vega/core/examples/nullchain"
+	config "code.vegaprotocol.io/vega/core/examples/nullchain/config"
+	"code.vegaprotocol.io/vega/protos/vega"
+	walletpb "code.vegaprotocol.io/vega/protos/vega/wallet/v1"
 )
 
 func randomOrder(marketID string, side vega.Side, now time.Time) *walletpb.SubmitTransactionRequest {

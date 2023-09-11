@@ -1,0 +1,135 @@
+#!/usr/local/bin/python3
+
+import os
+import sys
+import requests
+import time
+from google.protobuf.json_format import MessageToJson, MessageToDict
+from typing import Any, Dict, List
+
+URL = "http://localhost:1789/api/v2"    
+
+
+HOSTNAME = "wwestgarth"
+
+def list_keys(token):
+    data = {
+          "jsonrpc":"2.0",
+          "method":"client.list_keys",
+          "params": {
+            "token": token,
+          },
+          "id": "1",
+
+    }
+    print("using token", token)
+    r = requests.post(os.path.join(URL, "requests"), json=data, headers={'origin': HOSTNAME, "Authorization": "VWT " + token})
+
+    print(r.json())
+
+
+def get_chain_id(token):
+    data = {
+      "jsonrpc": "2.0",
+      "method": "client.get_chain_id",
+      "id": "wahtever-id-you-want"
+    }
+    print("using token", token)
+    r = requests.post(os.path.join(URL, "requests"), json=data, headers={'origin': HOSTNAME, "Authorization": "VWT " +token})
+    print(r.json())
+
+
+def sign_transaction(token):
+
+
+
+
+    tx = {
+      "voteSubmission" : {
+        "proposalId":"eb2d3902fdda9c3eb6e369f2235689b871c7322cf3ab284dde3e9dfc13863a17",
+        "value":"VALUE_YES",
+      },
+    }
+
+    tx = {
+      "orderSubmission" : {
+        "marketId":"eb2d3902fdda9c3eb6e369f2235689b871c7322cf3ab284dde3e9dfc13863a17",
+        "price":"1000000",
+        "size": 10,
+        "side": "SIDE_SELL",
+        "type": "TYPE_LIMIT",
+        "timeInForce": "TIME_IN_FORCE_FOK",
+      },
+    }
+
+    data = {
+      "jsonrpc": "2.0",
+      "method": "client.check_transaction",
+      "id": "wahtever-id-you-want",
+      "params": {
+          "hostname": HOSTNAME,
+          "publicKey": "4dbb7733b4381d79ce372ef838e1651e028b19553d8ae2de14dc2dd37bdf17b2",
+          "transaction": tx,
+        },
+    }
+    print("using token", token)
+    r = requests.post(os.path.join(URL, "requests"), json=data, headers={'origin': HOSTNAME, "Authorization": "VWT " +token})
+    print(r.json())
+
+
+
+
+def main():
+    r = requests.get(os.path.join(URL, "health"))
+    r.raise_for_status()
+    print("wallet service is healthy")
+    
+
+    if len(sys.argv) > 1:
+      list_keys(sys.argv[1])
+      sign_transaction(sys.argv[1])
+      return
+
+    data = {
+      "jsonrpc": "2.0",
+      "method": "client.connect_wallet",
+      "id": "1",
+      "params": {
+          "wallet": "sandbox",
+        },
+
+    }
+
+    if False:
+      r = requests.post(os.path.join(URL, "requests"), json=data, headers={'origin': HOSTNAME})
+      print(r.json())
+      r.raise_for_status()
+      print(r.headers['Authorization'])
+      print(r.json())
+      #token = r.json()["result"]["token"]
+      token = r.headers['Authorization']
+
+    token = "VWT VYlTL0EegZec7etEk7f7e1dPRTN405Z3gT7Holvjj7cOZvRUxgQjbWeYTaZv2Ovo"
+    print("connected wallet with token", token)
+
+
+    # list keys
+    list_keys(token.split()[1])
+
+    return
+    # now disconnect
+    data = {
+        "jsonrpc":"2.0",
+        "method":"client.disconnect_wallet",
+        "id": "1",
+
+    }
+    print("posting","VWT "+token )
+    r = requests.post(os.path.join(URL, "requests"), json=data, headers={'origin': HOSTNAME, "Authorization": token})
+    r.raise_for_status()
+    print(r.json())
+    print("disconnected from wallet service")
+
+
+if __name__ == "__main__":
+    main()

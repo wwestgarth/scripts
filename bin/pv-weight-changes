@@ -1,0 +1,109 @@
+#!/usr/local/bin/python3
+
+import requests
+
+def main2():
+
+
+    epoch = 505
+    url = "http://commodum.mainnet.vega.community:3009/epochs"
+
+
+    changes = set()
+    weights = dict()
+
+    while True:
+
+        r = requests.get(url+"?id="+str(epoch))
+
+        if r.status_code != 200:
+            print("stopping", epoch, r.status_code)
+            break
+        
+        print(epoch)
+        validators = r.json()["epoch"]["validators"]
+        for v in validators:
+            
+            vid = v['id']
+            voting_power = v["rankingScore"]["stakeScore"]
+
+            # look for it in out dict
+            if vid in weights and weights[vid] != voting_power:
+                print(vid, "prev", weights[vid], "now", voting_power)
+                changes.add(epoch)
+
+            weights[vid] = voting_power
+        epoch -= 1
+
+    print(sorted(list(changes)))
+
+
+#URL = "https://api.n00.validators-testnet.vega.xyz/api/v2/epoch"
+URL = "http://commodum.mainnet.vega.community:3009/epochs"
+
+def find_first_non_zero_score():
+    epoch = 500
+    while True:
+        print(epoch)
+        r = requests.get(URL+"?id="+str(epoch))
+
+        if r.status_code != 200:
+            print("stopping", epoch, r.status_code)
+            return None
+        
+        validators = r.json()["epoch"]["validators"]
+        scores = [v["rewardScore"]["multisigScore"] == "1" for v in validators if v["rewardScore"] is not None]
+        if all(scores):
+            print("all scores non-zero in", epoch)
+            for v in validators:
+                if v["rankingScore"]["status"] != v["rankingScore"]["previousStatus"]:
+                    print(v["rankingScore"]["status"], v["rankingScore"]["previousStatus"])
+            return epoch
+
+        epoch -= 1
+
+def track_changes(st):
+
+
+    to_add = set()
+    to_remove = set()
+
+    epoch = st
+    while True:
+        print(epoch)
+        r = requests.get(URL+"?id="+str(epoch))
+
+        if r.status_code != 200:
+            print("stopping", epoch, r.status_code)
+            return to_add, to_remove
+        
+        for v in r.json()["epoch"]["validators"]:
+            if v["rankingScore"]["status"] == "VALIDATOR_NODE_STATUS_TENDERMINT" and v["rankingScore"]["status"] != "VALIDATOR_NODE_STATUS_TENDERMINT":
+                # they were promoted in this epoch
+                print("ADD", v['id'])
+                to_add.add(v["id"])
+                to_remove.remove(v["id"])
+                continue
+
+            if v["rankingScore"]["status"] != "VALIDATOR_NODE_STATUS_TENDERMINT" and v["rankingScore"]["status"] == "VALIDATOR_NODE_STATUS_TENDERMINT":
+                # they were demoted in this epoch
+                print("REMOVE", v['id'])
+                to_remove.add(v["id"])
+                to_add.remove(v["id"])
+                continue
+        epoch += 1
+
+
+def main():
+
+    epoch = find_first_non_zero_score()
+    return
+    to_add, to_remove = track_changes(498)
+    print(to_add)
+    print(to_remove)
+    # now wind forward checking or changes
+
+
+
+if __name__ == "__main__":
+    main()

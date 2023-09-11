@@ -17,7 +17,7 @@ def trim_logs(lines):
         if len(s) == 0:
             continue
         if len(s[0]) == 28 and s[0].endswith("+0100"):
-            new_line = line[28:]
+            new_line = line[24:]
         
 
         out_lines.append(new_line)
@@ -26,6 +26,46 @@ def trim_logs(lines):
 
 
 def trim_to_block(block_number, infile):
+
+    block_lines = []
+    save = False 
+
+    with open(infile) as inf:
+
+        for line in inf.readlines():
+            # look for start of block "block_number", Spam protection EndOfBlock called	{"blockHeight": 29}
+
+            #if "entering begin block" in line and save :
+            #    break
+
+            if "entering begin block" in line and ": " + block_number + "}" in line:
+                print("found", line)
+                save = True
+
+            if save:
+                block_lines.append(line)
+
+    if save:
+        return block_lines
+    
+    print("did not find")
+    # must be restored logs and first block after restore?
+    save = True
+    with open(infile) as inf:
+
+        for line in inf.readlines():
+            # look for start of block "block_number", Spam protection EndOfBlock called	{"blockHeight": 29}
+
+            #if "entering begin block" in line and save:
+            #    break
+
+            if save:
+                block_lines.append(line)
+
+    return block_lines
+
+
+def trim_to_block_old(block_number, infile):
 
     block_lines = []
     save = False

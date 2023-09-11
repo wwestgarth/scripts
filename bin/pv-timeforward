@@ -15,6 +15,17 @@ def mint(duration):
     r = requests.post(url, json=payload)
     print(r.status_code)
 
+
+def status(duration):
+
+    url = 'http://localhost:3101/api/v1/status'
+
+
+
+    r = requests.get(url)
+    print(r.status_code)
+    print(r.body)
+
 def main():
 
     parser = argparse.ArgumentParser(description='Purge any state in the vegahome directory')

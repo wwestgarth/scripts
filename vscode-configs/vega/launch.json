@@ -6,13 +6,13 @@
             "type": "go",
             "request": "launch",
             "mode": "test",
-            "program": "${workspaceFolder}/integration/main_test.go",
+            "program": "${workspaceFolder}/core/integration/main_test.go",
             "_comment": "  * * *  change to your .feature file  * * *  ",
             "args": [
                 "--godog.format",
                 "pretty",
                 "-test.run",
-                "${workspaceFolder}/integration/features/settlement/settlement_at_expiry.feature"
+                "${workspaceFolder}/core/integration/features/settlement/settlement_at_expiry.feature"
             ]
         },
         {
@@ -26,7 +26,7 @@
                 "--godog.format",
                 "pretty",
                 "-test.run",
-                "${workspaceFolder}/integration/features/settlement/settlement_at_expiry.feature:23"
+                "${workspaceFolder}/core/integration/features/settlement/settlement_at_expiry.feature:23"
             ]
         },
         {
@@ -61,14 +61,33 @@
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "${workspaceFolder}/cmd/vega",
+            "program": "vega",
             "args": [
                 "node",
                 "--blockchain.chain-provider=nullchain",
                 "--blockchain.nullchain.genesis-file=/Users/wwestgarth/work/scripts/genesis-files/genesis-ropsten.json",
                 "--nodewallet-passphrase-file=/Users/wwestgarth/pp",
                 "--nodewallet.eth.address=https://ropsten.infura.io/v3/a3868124cd4340079ae33f48af9f9875",
-                "--blockchain.nullchain.log-level=debug"
+                "--blockchain.nullchain.log-level=debug",
+                "--blockchain.nullchain.replay-file=/Users/wwestgarth/work/vega/replay-file",
+                "--blockchain.nullchain.replay=true"
+            ]
+        },
+        {
+            "name": "Nullchain VegaSim",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/vega",
+            "args": [
+                "node",
+                "--blockchain.chain-provider=nullchain",
+                "--blockchain.nullchain.genesis-file=/Users/wwestgarth/work/vega-market-sim/vega_sim/vegahome/genesis.json",
+                "--nodewallet-passphrase-file=/Users/wwestgarth/pp",
+                "--blockchain.nullchain.log-level=debug",
+                "--blockchain.nullchain.replay-file=/Users/wwestgarth/work/vega/replay-file-long",
+                "--blockchain.nullchain.replay",
+                "--snapshot.load-from-block-height=-1"
             ]
         },
         {

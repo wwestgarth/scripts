@@ -1,0 +1,133 @@
+#!/usr/local/bin/python3
+
+import argparse
+import toml
+import os
+import subprocess
+import requests
+import time
+import json
+import sys
+import base64
+from google.protobuf.json_format import MessageToDict, ParseDict
+import vega.chain_events_pb2 as chain_events_proto
+
+import vega.commands.v1.transaction_pb2 as transaction_proto
+import vega.commands.v1.validator_commands_pb2 as cmd_validators
+
+TEST_URL = "https://tm.n00.devnet1.vega.rocks/block?height="
+
+
+
+def get_chain_events(txns, party_id):
+
+
+
+    """
+    {'nonce': '9372163926085553225', 'blockHeight': '42', 'chainEvent': {'txId': '0x17749ec31b4c9b0d9cf5ca4f5b451c8589c912d1ffb83c1ad1d908359eea773f', 'stakingEvent': {'index': '2', 'block': '3329613', 'stakeDeposited': {'ethereumAddress': '0xf4A9a832A84F4d9A52dFB21828eb91CB93697Fa9', 'vegaPublicKey': '22018ad345b6727db87320bfd9969be9994064ada416d48f6498fa9562353317', 'amount': '3000000000000000000000', 'blockTime': '1682041860'}}}}
+    """
+    chain_evts = []
+    for t in txns:
+        # decode base64
+        bb = base64.b64decode(t)
+
+        # unmarshal the bytes into a vega transaction
+        proto_txn = transaction_proto.Transaction()
+        proto_txn.ParseFromString(bb)
+        proto_input = transaction_proto.InputData()
+        proto_input.ParseFromString(proto_txn.input_data)
+
+
+        msg = MessageToDict(proto_input)
+        if msg.get("chainEvent") is None:
+            continue
+        
+        if msg["chainEvent"].get("stakingEvent") is not None:
+            continue
+
+        print(msg)
+        #party = msg["chainEvent"]["stakingEvent"]["stakeDeposited"]["vegaPublicKey"]
+        #if party == party_id:
+        #    chain_evts.append(proto_input)
+        
+    return chain_evts
+
+
+
+def find_stake_deposit_event(party_id, search_start, search_end):
+
+
+    evts = []
+    while True:
+
+        url = TEST_URL+str(search_start)
+        res = requests.get(url)
+        out = res.json()
+        txns = out["result"]["block"]["data"]["txs"]
+
+        evts.extend(get_chain_events(txns, party_id))
+
+        search_start +=1
+
+        if search_end == search_start:
+            break
+
+    return evts
+
+
+
+
+
+
+def main():
+
+    find_stake_deposit_event("", 100, 500)
+
+    return
+    res = requests.get(TEST_URL)
+
+    out = res.json()
+    txns = out["result"]["block"]["data"]["txs"]
+
+    print(f"found {len(txns)} txns")
+
+    for t in txns:
+        # decode base64
+        bb = base64.b64decode(t)
+
+        # unmarshal the bytes into a vega transaction
+        proto_txn = transaction_proto.Transaction()
+        proto_txn.ParseFromString(bb)
+        print(proto_txn.input_data)
+
+        proto_input = transaction_proto.InputData()
+        proto_input.ParseFromString(proto_txn.input_data)
+        print(proto_input)
+
+        proto_input.nonce=12
+        proto_input.block_height=13
+        print(proto_input)
+        break
+
+
+
+
+    
+
+
+if __name__ == "__main__":
+
+    deposit = chain_events_proto.ERC20Deposit(
+        vega_asset_id="blah",
+        source_ethereum_address="balh",
+        target_party_id="blah",
+        amount=str(10000),
+    )
+
+    evt = chain_events_proto.ERC20Event(block=1000, index=1000, stake_deposited=deposit)
+    # evt = chain_events_proto.ERC20Event(block=10000, index=1000, bridge_stopped=True)
+
+    # put it in a command
+    command = cmd_validators.ChainEvent(nonce=123, tx_id="1234", erc20=evt)
+    print(MessageToDict(command))
+    #main()

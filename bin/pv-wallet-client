@@ -1,0 +1,531 @@
+#!/usr/local/bin/python3
+
+import os
+import sys
+import requests
+import time
+from google.protobuf.json_format import MessageToJson, MessageToDict
+from typing import Any, Dict, List
+import logging
+import subprocess
+import json
+from requests.models import Response
+
+VEGA_BIN = "vega"
+
+URL = "http://localhost:1789/api/v2"    
+
+
+class WalletClient(object):
+    def __init__(self, url: str):
+        self.token = ""
+        self.url = url
+
+        self._httpsession = requests.Session()
+
+    def _header(self) -> Dict[str, Any]:
+        if self.token == "":
+            raise Exception("not logged in")
+        return {"Authorization": "Bearer " + self.token}
+
+    def create(self, walletname: str, passphrase: str) -> requests.Response:
+        """
+        Create a wallet using a wallet name and a passphrase. If a wallet
+        already exists, the action fails. Otherwise, a JWT (json web token) is
+        returned.
+        """
+        req = {"wallet": walletname, "passphrase": passphrase}
+        url = "{}/api/v1/wallets".format(self.url)
+        r = self._httpsession.post(url, json=req)
+        if r.status_code != 200:
+            self.token = ""
+        else:
+            self.token = r.json()["token"]
+        return r
+
+    def login(self, walletname: str, passphrase: str) -> requests.Response:
+        """
+        Log in to an existing wallet. If the wallet does not exist, or if the
+        passphrase is incorrect, the action fails. Otherwise, a JWN (json web
+        token) is returned.
+        """
+        req = {"wallet": walletname, "passphrase": passphrase}
+        url = "{}/api/v1/auth/token".format(self.url)
+        r = self._httpsession.post(url, json=req)
+        if r.status_code == 200:
+            self.token = r.json()["token"]
+        else:
+            self.token = ""
+        return r
+
+    def logout(self) -> requests.Response:
+        """
+        Log out from a wallet. The token is deleted from the WalletClient
+        object.
+        """
+        url = "{}/api/v1/auth/token".format(self.url)
+        r = self._httpsession.delete(url, headers=self._header())
+        if r.status_code == 200:
+            self.token = ""
+        return r
+
+    def getkey(self, pubKey: str) -> requests.Response:
+        """
+        Get keypair information (excluding private key).
+
+        pubKey must be a hex-encoded string.
+        """
+        url = "{}/api/v1/keys/{}".format(self.url, pubKey)
+        return self._httpsession.get(url, headers=self._header())
+
+    def taintkey(self, pubKey: str, passphrase: str) -> requests.Response:
+        """
+        Label a keypair as tainted.
+
+        pubKey must be a hex-encoded string.
+        """
+        req = {"passphrase": passphrase}
+        url = "{}/api/v1/keys/{}/taint".format(self.url, pubKey)
+        return self._httpsession.put(url, headers=self._header(), json=req)
+
+    def listkeys(self) -> requests.Response:
+        """
+        List information (excluding private keys) on all keypairs.
+        """
+        url = "{}/api/v1/keys".format(self.url)
+        return self._httpsession.get(url, headers=self._header())
+
+    def generatekey(self, passphrase: str, metadata: List[Dict[str, str]]) -> requests.Response:
+        """
+        Generate a new keypair with the given metadata.
+        """
+        req = {"passphrase": passphrase, "meta": metadata}
+        url = "{}/api/v1/keys".format(self.url)
+        return self._httpsession.post(url, headers=self._header(), json=req)
+
+    def signtx(self, tx, pubKey) -> requests.Response:
+        """
+        Sign a transaction.
+
+        tx must be a base64-encoded string, e.g.
+        tx = base64.b64encode(b"someblob").decode("ascii")
+
+        pubKey must be a hex-encoded string.
+        """
+        req = {"inputData": tx, "pubKey": pubKey, "propagate": False}
+        url = "{}/api/v1/sign".format(self.url)
+        return self._httpsession.post(url, headers=self._header(), json=req)
+
+    def signtx_v2(self, req, pubKey) -> requests.Response:
+        """
+        Sign and submit a transaction.
+
+        pubKey must be a hex-encoded string.
+        """
+        url = "{}/api/v1/command".format(self.url)
+        return self._httpsession.post(url, headers=self._header(), json=req)
+
+    def checktx(self, req) -> requests.Response:
+        """
+        Send the transaction to the network to be checked only
+
+        The transaction will not be included in any block
+        """
+        url = "{}/api/v1/command/check".format(self.url)
+        return self._httpsession.post(url, headers=self._header(), json=req)
+
+    def updatekeymetadata(self, pubKey: str, passphrase: str, metadata: List[Dict[str, str]]) -> requests.Response:
+        """
+        Update the metadata for a keypair. Any existing metadata is removed,
+        and replaced with the supplied metadata.
+
+        pubKey must be a hex-encoded string.
+        """
+        req = {"passphrase": passphrase, "meta": metadata}
+        url = "{}/api/v1/keys/{}/metadata".format(self.url, pubKey)
+        return self._httpsession.put(url, headers=self._header(), json=req)
+
+    def importMnemonic(self, walletname: str, passphrase: str, recoveryPhrase: str) -> requests.Response:
+        req = {"wallet": walletname, "passphrase": passphrase, "recoveryPhrase": recoveryPhrase}
+        url = "{}/api/v1/wallets/import".format(self.url)
+        # return self._httpsession.post(url, headers=self._header(), json=req)
+        r = self._httpsession.post(url, json=req)
+        if r.status_code == 200:
+            self.token = r.json()["token"]
+        else:
+            self.token = ""
+        return r
+
+    def serviceStatus(self) -> requests.Response:
+        """
+        List information (excluding private keys) on all keypairs.
+        """
+        url = "{}/api/v1/status".format(self.url)
+        return self._httpsession.get(url, headers=self._header())
+
+    def walletVersion(self) -> requests.Response:
+        """
+        List information (excluding private keys) on all keypairs.
+        """
+        url = "{}/api/v1/version".format(self.url)
+        return self._httpsession.get(url, headers=self._header())
+
+    def networkDetails(self) -> requests.Response:
+        """
+        List information (excluding private keys) on all keypairs.
+        """
+        url = "{}/api/v1/network".format(self.url)
+        return self._httpsession.get(url, headers=self._header())
+
+    def verify_data(self, input_data: str, pubkey: str, signature: str) -> requests.Response:
+        """
+        Verify the signature for the given input data
+        """
+        req = {"inputData": input_data, "pubKey": pubkey, "signature": signature}
+        url = "{}/api/v1/verify".format(self.url)
+        return self._httpsession.post(url, json=req)
+
+
+class WalletClientV2(object):
+    def __init__(self, url: str, passphrase_file : str, wallet_home: str):
+
+        # token and name the wallet we are actively using
+        self.token = ""
+        self.wallet_name = "" 
+
+        # all tokens created for all wallets
+        self.tokens = dict()
+
+        self.url = url
+        self.passphrase_file = passphrase_file
+        self.wallet_home = wallet_home
+        self._httpsession = requests.Session()
+
+    def _header(self) -> Dict[str, Any]:
+        if self.token == "":
+            raise Exception("not logged in")
+        return {'origin': "system-tests", "Authorization": "VWT " + self.token}
+
+
+    def _request(self, payload):
+        url = "{}/api/v2/requests".format(self.url)
+        return self._httpsession.post(url, headers=self._header(), json=payload)
+
+    def create(self, walletname: str, passphrase: str) -> requests.Response:
+        """
+        Create a wallet using the CLI which will be dynamically picked up by the running service
+        """
+
+        r = Response()
+        r.status_code = 200
+
+        # create a new wallet
+        cmd = [VEGA_BIN, "wallet", "create", "--wallet", walletname, "--home", self.wallet_home, "--passphrase-file", self.passphrase_file, "--output", "json"]
+        logging.info(f"creating wallet: {walletname}")
+        logging.info(f"cmd: {' '.join(cmd)}")
+
+        output = subprocess.run(cmd, capture_output=True, universal_newlines=True, encoding="UTF-8")
+        
+        if output.returncode == 0:
+            return
+
+        jout = json.loads(output.stderr)
+        if jout['error'] == "a wallet with the same name already exists":
+            return
+
+        logging.info(f"failed to create wallet {walletname} via CLI: {output.stderr}")
+        r.status_code = 500
+        return
+    
+
+    def _find_api_token(self, wallet_name):
+
+        cmd = [VEGA_BIN, "wallet", "api-token", "list", "--home", self.wallet_home, "--output", "json"]
+        cmd.extend(["--passphrase-file", self.passphrase_file])
+
+        logging.info(f"looking for api-token for: {wallet_name}")
+        logging.info(f"cmd: {' '.join(cmd)}")
+        output = subprocess.run(cmd, capture_output=True, universal_newlines=True, encoding="UTF-8")
+        if output.returncode != 0:
+            logging.info(f"error: {output.stderr}")
+            assert False, f"failed to list api tokens for {wallet_name} via CLI"
+
+        jout = json.loads(output.stdout)
+        for data in jout['tokens']:
+            if data["description"] == wallet_name:
+                logging.info(f"found api token for {wallet_name}")
+                return data['token']
+
+        return None
+
+    def _create_api_token(self, wallet_name):
+
+        # check we don't already have one on file
+        # TODO maybe this is not needed and we always assume new test run new token
+        token = self._find_api_token(wallet_name)
+        if token:
+            self.tokens[wallet_name] = token
+            return
+
+        cmd = [VEGA_BIN, "wallet", "api-token", "generate", "--home", self.wallet_home, "--output", "json"]
+        cmd.extend(["--wallet-name", wallet_name, "--wallet-passphrase-file", self.passphrase_file, "--tokens-passphrase-file", self.passphrase_file])
+
+        # add the wallet name as the description so we can find the token of a wallet we already have
+        cmd.extend(["--description", wallet_name])
+
+        logging.info(f"creating api-token for: {wallet_name}")
+        logging.info(f"cmd: {' '.join(cmd)}")
+        output = subprocess.run(cmd, capture_output=True, universal_newlines=True, encoding="UTF-8")
+        logging.info(f"output: {output.stdout}")
+        if output.returncode != 0:
+            logging.info(f"error: {output.stderr}")
+            assert False, f"failed to create api token for {wallet_name} via CLI"
+
+        jout = json.loads(output.stdout)
+        self.tokens[wallet_name] = jout['token']
+
+
+    def login(self, walletname: str, passphrase: str) -> requests.Response:
+        
+        if self.tokens.get(walletname, None) is None:
+            self._create_api_token(walletname)
+        
+        self.token = self.tokens[walletname]
+        self.wallet_name = walletname
+        r = Response()
+        r.status_code = 200
+        return r
+
+    def logout(self) -> requests.Response:
+        """
+        Log out from a wallet. The token is deleted from the WalletClient
+        object.
+        """
+        # do we really want to delete the API token all the time?
+        assert False, "not implemented, needs CLI call"
+
+    def getkey(self, pubKey: str) -> requests.Response:
+        """
+        Get keypair information (excluding private key).
+
+        pubKey must be a hex-encoded string.
+        """
+        assert False, "not implemeneted, needs CLI call"
+
+    def taintkey(self, pubKey: str, passphrase: str) -> requests.Response:
+        """
+        Label a keypair as tainted.
+
+        pubKey must be a hex-encoded string.
+        """
+        assert False, "not implemented, needs CLI call"
+
+    def listkeys(self) -> requests.Response:
+        """
+        List information (excluding private keys) on all keypairs.
+        """
+        data = {
+          "jsonrpc":"2.0",
+          "method":"client.list_keys",
+          "id": "1",
+        }
+        r = self._request(data)
+
+        if r.status_code != 200:
+            return r
+
+        # make it look like a V1 response
+        keys = []
+        for k in r.json()['result']['keys']:
+            keys.append({'pub': k['publicKey'], 'name': k['name']})
+
+        jout_v1 = {'keys': keys}
+        r._content = str.encode(json.dumps(jout_v1))
+        return r
+
+
+    def generatekey(self, passphrase: str, metadata: List[Dict[str, str]]) -> requests.Response:
+        """
+        Generate a new keypair with the given metadata.
+        """
+        r = Response()
+        r.status_code = 200
+
+        # get wallet name from whatever API token we're using
+
+        wallet_name = self.wallet_name
+
+        # create a new wallet
+        cmd = [VEGA_BIN, "wallet", "key", "generate", "--wallet", wallet_name, "--home", self.wallet_home, "--passphrase-file", self.passphrase_file, "--output", "json"]
+
+        if len(metadata) != 0:
+            parsed = ",".join(["\""+md.keys[0]+":"+md.values[0]+"\"" for md in metadata])
+            cmd.extend("--meta", parsed)
+        logging.info(f"creating key for wallet: {wallet_name}")
+        logging.info(f"cmd: {' '.join(cmd)}")
+
+        output = subprocess.run(cmd, capture_output=True, universal_newlines=True, encoding="UTF-8")
+        
+        if output.returncode == 0:
+            return
+
+        logging.info(f"failed to create key for wallet {wallet_name} via CLI: {output.stderr}")
+        r.status_code = 500
+        return
+
+    def signtx(self, req, pubKey) -> requests.Response:
+        """
+        Sign a transaction.
+
+        tx must be a base64-encoded string, e.g.
+        tx = base64.b64encode(b"someblob").decode("ascii")
+
+        pubKey must be a hex-encoded string.
+        """
+        # strip out everything other than the command from the request to make it
+        # V2 compatible
+        req.pop('propagate', None)
+        req.pop('pubKey', None)
+        data = {
+            "jsonrpc": "2.0",
+            "method": "client.sign_transaction",
+            "id": "1",
+            "params": {
+                "publicKey": pubKey,
+                "transaction": req,
+                },
+            }
+        return self._request(data)
+
+
+    def signtx_v2(self, req, pubKey) -> requests.Response:
+        """
+        Sign and submit a transaction.
+
+        pubKey must be a hex-encoded string.
+        """
+
+        req.pop('propagate', None)
+        req.pop('pubKey', None)
+        data = {
+            "jsonrpc": "2.0",
+            "method": "client.send_transaction",
+            "params": {
+                "publicKey": pubKey,
+                "sendingMode": "TYPE_SYNC",
+                "transaction": req,
+            },
+            "id": "request",
+        }
+        return self._request(data)
+
+    def checktx(self, req) -> requests.Response:
+        """
+        Send the transaction to the network to be checked only
+
+        The transaction will not be included in any block
+        """
+        assert False, "not implement in V2 wallet"
+
+    def updatekeymetadata(self, pubKey: str, passphrase: str, metadata: List[Dict[str, str]]) -> requests.Response:
+        """
+        Update the metadata for a keypair. Any existing metadata is removed,
+        and replaced with the supplied metadata.
+
+        pubKey must be a hex-encoded string.
+        """
+        assert False, "not implemented, needs CLI call"
+
+    def importMnemonic(self, walletname: str, passphrase: str, recoveryPhrase: str) -> requests.Response:
+        
+        logging.info(f"importing wallet: {walletname} with mnemonic: {recoveryPhrase}")
+
+        # create recovery file
+
+        recovery_file = os.path.join(self.wallet_home, walletname + "-recovery-file")
+        o = open(recovery_file, "w")
+        o.write(recoveryPhrase)
+        o.close()
+
+        # make a dummy repsonse so it looks like V1 for now
+        r = Response()
+        r.status_code = 200
+        
+        try:
+            cmd = [VEGA_BIN, "wallet", "import", "--home", self.wallet_home, "--output", "json"]
+            cmd.extend(["--wallet", walletname, "--passphrase-file", self.passphrase_file, "--recovery-phrase-file", recovery_file])
+
+            logging.info(f"cmd: {' '.join(cmd)}")
+            output = subprocess.run(cmd, capture_output=True, universal_newlines=True, encoding="UTF-8")
+            logging.info(f"output: {output.stdout}")
+            if output.returncode != 0:
+                logging.info(f"failed to import wallet with mnemonic for: {output.stderr}")
+                r.status_code = 500
+        finally:
+            os.remove(recovery_file)
+        return r
+
+    def serviceStatus(self) -> requests.Response:
+        """
+        List information (excluding private keys) on all keypairs.
+        """
+        assert False, "not implemented in V2 API"
+
+    def walletVersion(self) -> requests.Response:
+        """
+        List information (excluding private keys) on all keypairs.
+        """
+        assert False, "not implemented in V2 API"
+
+    def networkDetails(self) -> requests.Response:
+        """
+        List information (excluding private keys) on all keypairs.
+        """
+        assert False, "not implemented, needs CLI call"
+
+    def verify_data(self, input_data: str, pubkey: str, signature: str) -> requests.Response:
+        """
+        Verify the signature for the given input data
+        """
+        return "not implemented in the V2 API"
+
+
+def main():
+
+    logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
+    url = "http://localhost:1789"
+    client_v1 = WalletClient(url)
+    client_v2 = WalletClientV2(url, "/Users/wwestgarth/pp", "/Users/wwestgarth/work/wallet-client-test")
+
+    rphrase = "cheese release husband devote lion radar tenant access exercise enough beef cloth essay sugar aisle fossil shaft trick behind dolphin couch oppose west abandon"
+    #cl.importMnemonic("imported-wallet-yo", "pin", rphrase)
+    #return
+    #r1 = client_v1.create("sandbox1", "pin")
+    #r2 = client_v2.create("sandbox2", "pin")
+
+    #print(r1.json())
+    #print(r2.json())
+
+    r = client_v2.login("sandbox", "pin")
+    print(r)
+    #print(r.json())
+
+    #keys = client_v1.listkeys().json()['result']['keys']
+
+    keys = client_v2.listkeys().json()
+    print("what", keys)
+    keys = keys['keys']
+
+    return
+    key = keys[0]['pub']
+    tx = {
+      "voteSubmission" : {
+        "proposalId":"eb2d3902fdda9c3eb6e369f2235689b871c7322cf3ab284dde3e9dfc13863a17",
+        "value":"VALUE_YES",
+      },
+    }
+    print("using key", key)
+    print(client_v1.signtx(tx, key).json())
+
+if __name__ == "__main__":
+    main()
