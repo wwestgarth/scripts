@@ -10,7 +10,7 @@ import json
 import sys
 import glob
 import difflib
-import socket
+import filecmp
 
 from enum import Enum
 
@@ -27,7 +27,7 @@ class FailureMode(Enum):
     OTHER = 5
 
 # how many blocks to replay the chain after restarting from a snapshot
-REPLAY_LENGTH = 500
+REPLAY_LENGTH = 10000
 MAX_WAIT_TO_START = 5
 
 
@@ -129,6 +129,16 @@ class VegaTool:
             print(f"WARNING: unable to write checkpoint file: {height} {out_file} {e}")
             return False
 
+
+    def compare_event_files(self, file1, file2):
+        """
+        Compares the two event files and returns whether or not there was a difference.
+        """
+        # we can probably do better here and have a vega tool that auto-unmarshals the event files and does a 
+        # human readable diff
+        return len(get_diff(file1, file2)) == 0
+
+
 class Vega:
     """
     Manager for the vega process
@@ -177,6 +187,20 @@ class Vega:
 
         self._set_configs()
 
+
+    def enable_event_file(self):
+        """
+        Turn on writing and eventlog-replay file for the node.
+        """
+        cfg = self.read_vega_config()
+
+        cfg["Broker"]["File"]["Enabled"] = True
+        cfg["Broker"]["File"]["File"] = os.path.join(self.vghome, "eventlog-replay.evt")
+        cfg["Admin"]["Server"] = dict()
+
+        self.write_vega_config(cfg)
+
+
     def show_version(self):
         """
         Print the version of the vega binary
@@ -187,7 +211,18 @@ class Vega:
         """
         Print the version of the vega binary
         """
-        subprocess.check_call([self.vega_bin, "unsafe_reset_all", "--home", self.vghome], stdout=subprocess.DEVNULL)
+        subprocess.check_call([self.vega_bin, "unsafe_reset_all", "--home", self.vghome])
+        
+
+    def get_last_block(self):
+        """
+        Print the version of the vega binary
+        """
+        cmd = [self.vega_bin, "tools", "snapshot", "--home", self.vghome, "--tendermint-home", self.tmhome, "--output", "json"]
+        res  = subprocess.check_output(cmd)
+        print(res)
+        print(int(json.loads(res)["lastProcessedBlock"]))
+        return int(json.loads(res)["lastProcessedBlock"])
 
     def get_log_files(self):
         """
@@ -431,7 +466,7 @@ class ReplayWatcher:
         return self.vega.wait_until_ready()
 
 
-    def _check_status(self, restore_from):
+    def _check_status(self, restore_from, last_block):
         """
         Check the current state of the chain replay returning (ok, finished)
         """
@@ -442,7 +477,7 @@ class ReplayWatcher:
             print(f"Stopped: node unable to start.")
             return False
         
-        if restore_from != 0 and self.current_block_height > 47707:
+        if restore_from != 0 and self.current_block_height > restore_from + REPLAY_LENGTH:
             print(f"Finished: replay from height {restore_from} has reached height {self.current_block_height} > {restore_from + REPLAY_LENGTH}.")
             self.finished = True
             return True
@@ -463,10 +498,11 @@ class ReplayWatcher:
             return True
 
         self.last_block_height = self.current_block_height
-        if now > self.last_change_time + 10:
+        if self.current_block_height == last_block:
             print(f"Finished: replay from height {restore_from} has reached the end of the chain.")
             self.finished = True
         
+
         return True
 
     def replay(self, restore_from):
@@ -475,6 +511,8 @@ class ReplayWatcher:
 
         if restore_from == 0:
             self.vega.unsafe_reset_all()
+
+        last_block = self.vega.get_last_block()
 
         ok = self._start_vega(restore_from)
         if not ok:
@@ -496,7 +534,7 @@ class ReplayWatcher:
         try:
             while True:
                 time.sleep(0.1)
-                ok = self._check_status(restore_from)
+                ok = self._check_status(restore_from, last_block)
                 res.success = ok
                 if self.finished or not ok:
                     break
@@ -516,6 +554,27 @@ def print_summary(visual, failing_blocks):
     print("".join(visual))
 
 
+
+def run_event_file_diff(vghome):
+
+    original = os.path.join(vghome, "eventlog.evt")
+    replayed = os.path.join(vghome, "eventlog-replay.evt")
+    if not os.path.exists(original):
+        print("WARNING: unable to diff event-files, could not find one for the original run")
+        return True
+    
+    if not os.path.exists(replayed):
+        print("WARNING: chain replay did not create event-files, cannot test diff")
+        return True
+    
+    print("comparing event files", original, replayed)
+    if not filecmp.cmp(original, replayed, shallow=False):
+        print("Found difference in event files", original, replayed)
+        return False
+    return True
+
+
+
 def run_soak_test(watcher, vega_tool):
     """
     Run the soak tests by looping over and attempting to restore from every snapshot that we can find
@@ -525,7 +584,8 @@ def run_soak_test(watcher, vega_tool):
     print(f"Found {len(heights)} snapshots in local store")
 
     if len(heights) == 0:
-        return [], []
+        # nothing to test
+        return True
 
      # we restore from snapshots at the highest blocks first because if a snapshot restore goes wrong, we may invalidate later ones
     visual = []
@@ -621,6 +681,8 @@ def main():
     #tmhome = "/Users/wwestgarth/work/networkdata/testnet/tendermint/node2"
     #vghome = "/Users/wwestgarth/Downloads/archive/vega_config"
     #tmhome = "/Users/wwestgarth/Downloads/archive/tm_config"
+    #vghome = "/Users/wwestgarth/Downloads/vgnode2"
+    #tmhome = "/Users/wwestgarth/Downloads/node2"
 
     # setup the crew
     vega = Vega(vghome, tmhome, args.vega_binary)
@@ -633,6 +695,8 @@ def main():
 
     if args.replay:
         print("Replaying chain for initial snapshot generation...")
+
+        #vega.enable_event_file()
         res = watcher.replay(0)
 
         if res.success:
@@ -657,8 +721,11 @@ def main():
         print(res.fail_reason)
         sys.exit(1)
 
+    
+    event_diff_result = run_event_file_diff(vghome)
+    soak_test_result = run_soak_test(watcher, vega_tool)
 
-    if not run_soak_test(watcher, vega_tool):
+    if event_diff_result:
         sys.exit(1)
    
 

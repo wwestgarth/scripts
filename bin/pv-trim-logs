@@ -44,6 +44,11 @@ def trim_to_block(block_number, infile):
 
             if save:
                 block_lines.append(line)
+                continue
+            
+            if save and "entering begin block" in line:
+                break
+
 
     if save:
         return block_lines

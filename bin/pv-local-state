@@ -1,0 +1,41 @@
+#!/usr/bin/env python3.10
+
+import os
+import shutil
+import argparse
+
+
+DOWNLOADS = "/Users/wwestgarth/Downloads"
+
+
+def purge(d):
+     
+    unzipped = os.path.join(DOWNLOADS,d)
+    zipped = unzipped+".zip"
+
+    if os.path.exists(zipped):
+        print("removing", zipped)
+        os.remove(zipped)
+    else:
+        print("already gone", zipped)
+
+    if os.path.exists(unzipped):
+        print("removing", unzipped)
+        shutil.rmtree(unzipped)
+    else:
+        print("already gone", unzipped)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='Restore node from all existing snapshots')
+    parser.add_argument('--state', '-s', dest='state', help="which state to purder")
+    args = parser.parse_args()
+
+    default_state = "testnet"
+    if args.state:
+        default_state = args.state
+    purge(default_state)
+
+
+if __name__ == "__main__":
+    main()
